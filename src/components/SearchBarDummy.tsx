@@ -1,23 +1,28 @@
-'use client'
-import { useState } from 'react';
+"use client";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQueryState, parseAsString } from "nuqs";
+import { useDebounce } from "use-debounce";
 
 const Searchbar = () => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
+  const [debouncedSearch] = useDebounce(query, 500);
+
+  const onSearch = (query: string) => {
+    setQuery(query);
   };
 
   return (
-    <div className="relative w-full max-w-lg mx-auto -my-7">
+    <div className="relative -my-7 mx-auto w-full max-w-lg">
       <input
         type="text"
         value={query}
-        onChange={handleInputChange}
+        onChange={(e) => onSearch(e.target.value)}
         placeholder="Search events..."
-        className="w-full py-3 pl-4 pr-12 rounded-full border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-lg bg-[#F6F6F6] shadow-sm transition duration-300 ease-in-out"
+        className="w-full rounded-full border-2 border-gray-300 bg-[#F6F6F6] py-3 pl-4 pr-12 text-lg shadow-sm transition duration-300 ease-in-out focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
-      <button className="absolute top-1/2 right-3 transform -translate-y-1/2 p-2 rounded-full bg-indigo-500 text-white hover:bg-indigo-600 transition duration-300">
+      <button className="absolute right-3 top-1/2 -translate-y-1/2 transform rounded-full bg-indigo-500 p-2 text-white transition duration-300 hover:bg-indigo-600">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-5 w-5"

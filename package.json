@@ -9,17 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.62.8",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
     "lucide-react": "^0.465.0",
     "next": "14.2.16",
+    "nuqs": "^2.2.3",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.4.0",
     "sharp": "^0.33.5",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "use-debounce": "^10.0.4"
   },
   "devDependencies": {
     "@types/node": "^20",

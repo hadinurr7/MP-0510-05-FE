@@ -4,7 +4,7 @@ interface ConcertCardProps {
   name: string;
   image: string;
   date: string;
-  price: number;
+  price: string;
 }
 
 const ConcertCard: React.FC<ConcertCardProps> = ({ name, image, date, price }) => {
@@ -18,8 +18,8 @@ const ConcertCard: React.FC<ConcertCardProps> = ({ name, image, date, price }) =
       </div>
       <div className="p-4">
         <h3 className="text-xl font-bold mb-2">{name}</h3>
-        <p className="text-gray-600 mb-4">${price.toFixed(2)}</p>
-        <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+        <p className="text-gray-600 mb-4">{price}</p>
+        <button className="bg-indigo-500 hover:bg-indigo-600 transition duration-300 text-white px-4 py-2 rounded">
           Book Now
         </button>
       </div>
