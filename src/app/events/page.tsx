@@ -1,7 +1,7 @@
 import EventPage from "@/features/events";
 import React from "react";
 
-const page = () => {
+const Events = () => {
   return (
     <div>
       <EventPage />
@@ -9,4 +9,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Events;

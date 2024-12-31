@@ -21,8 +21,8 @@ const ConcertGrid= () => {
     setQuery(query);
   };
 
-  const { data: categories } = useGetCategories();
-  const { data: city } = useGetCities();
+  const { data: categories, isPending: isPendingCategories } = useGetCategories();
+  const { data: city, isPending: isPendingCity } = useGetCities();
   const { data, isPending } = useGetEvents({
     page,
     categoryId: selectedCategory !== 0 ? selectedCategory : undefined,
@@ -41,7 +41,7 @@ const ConcertGrid= () => {
     setPage(1);
   };
 
-  if (isPending) {
+  if (isPending || isPendingCategories || isPendingCity) {
     return <p>Loading...</p>;
   }
 
@@ -132,7 +132,7 @@ const ConcertGrid= () => {
               <ConcertCard
                 key={index}
                 name={concert.name}
-                image={concert.image}
+                thumbnail={concert.thumbnail}
                 date={concert.startDate}
                 price={formatRupiah(concert.price)}
               />

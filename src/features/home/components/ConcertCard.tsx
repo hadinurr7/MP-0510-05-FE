@@ -2,16 +2,16 @@ import React from 'react';
 
 interface ConcertCardProps {
   name: string;
-  image: string;
+  thumbnail: string;
   date: string;
   price: string;
 }
 
-const ConcertCard: React.FC<ConcertCardProps> = ({ name, image, date, price }) => {
+const ConcertCard: React.FC<ConcertCardProps> = ({ name, thumbnail, date, price }) => {
   return (
     <div className="bg-white shadow-md rounded-md overflow-hidden">
       <div className="relative">
-        <img src={image} alt={name} className="w-full h-56 object-cover" />
+        <img src={thumbnail} alt={name} className="w-full h-56 object-cover" />
         <div className="absolute bottom-0 left-0 bg-gray-800 bg-opacity-70 text-white px-4 py-2 rounded-tr-md">
           <p>{date}</p>
         </div>
