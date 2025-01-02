@@ -1,46 +1,48 @@
-// "use client";
 
-// import { axiosInstance } from "@/lib/axios";
-// // import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-// // import { logoutAction } from "@/redux/slices/userSlice";
-// import { useEffect } from "react";
+"use client";
 
-// const useAxios = () => {
-// //   const dispatch = useAppDispatch();
-// //   const { token } = useAppSelector((state) => state.user);
+import { axiosInstance } from "@/lib/axios";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { logoutAction } from "@/redux/slices/userSlice";
+import { useEffect } from "react";
 
-//   useEffect(() => {
-//     // const requestIntercept = axiosInstance.interceptors.request.use(
-//     //   (config) => {
-//     //     if (token) {
-//     //       config.headers.Authorization = `Bearer ${token}`;
-//     //     }
-//     //     return config;
-//     //   },
-//     //   (error) => {
-//     //     return Promise.reject(error);
-//     //   },
-//     // );
+const useAxios = () => {
+  const dispatch = useAppDispatch();
+  const { token } = useAppSelector((state) => state.user);
 
-//     const responseIntercept = axiosInstance.interceptors.response.use(
-//       (response) => response,
-//       (err) => {
-//         if (err?.response.status === 401) {
-//           localStorage.removeItem("blog-storage");
-//           dispatch(logoutAction());
-//         }
+  useEffect(() => {
+    const requestIntercept = axiosInstance.interceptors.request.use(
+      (config) => {
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      },
+    );
 
-//         return Promise.reject(err);
-//       },
-//     );
+    const responseIntercept = axiosInstance.interceptors.response.use(
+      (response) => response,
+      (err) => {
+        if (err?.response.status === 401) {
+          localStorage.removeItem("event-storage");
 
-//     return () => {
-//       axiosInstance.interceptors.request.eject(requestIntercept);
-//       axiosInstance.interceptors.response.eject(responseIntercept);
-//     };
-//   }, [token, dispatch]);
+          dispatch(logoutAction());
+        }
 
-//   return { axiosInstance };
-// };
+        return Promise.reject(err);
+      },
+    );
 
-// export default useAxios;
+    return () => {
+      axiosInstance.interceptors.request.eject(requestIntercept);
+      axiosInstance.interceptors.response.eject(responseIntercept);
+    };
+  }, [token, dispatch]);
+
+  return { axiosInstance };
+};
+
+export default useAxios;
