@@ -1,11 +1,9 @@
-import HomePage from '@/features/home';
+import dynamic from 'next/dynamic';
 
-const Home: React.FC = () => {
-  return (
-    <div>
-      <HomePage />
-    </div>
-  );
-};
+const HomePage = dynamic(() => import('@/features/home'), {
+  ssr: false
+});
 
-export default Home;
+export default function Home() {
+  return <HomePage />;
+}

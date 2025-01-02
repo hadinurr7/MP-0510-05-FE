@@ -1,11 +1,10 @@
-import CreateEvent from "@/features/create-event"
+// app/create-event/page.tsx
+import dynamic from 'next/dynamic';
 
-const page = () => {
-  return (
-    <div>
-        <CreateEvent/>
-    </div>
-  )
+const CreateEventForm = dynamic(() => import('@/features/create-event/index'), {
+  ssr: false
+});
+
+export default function CreateEventPage() {
+  return <CreateEventForm />;
 }
-
-export default page

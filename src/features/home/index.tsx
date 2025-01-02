@@ -1,17 +1,24 @@
-"use client";
-
+// features/home/index.tsx
+import dynamic from "next/dynamic";
 import Footer from "@/components/Footer";
-import NavbarWithSearchBar from "@/components/NavbarWithSearchBar";
-import Searchbar from "@/components/SearchBarDummy";
-import ConcertGrid from "./components/ConcertGrid";
 import HeroSection from "./components/HeroSection";
+
+const NavbarWithSearchBar = dynamic(
+  () => import("@/components/NavbarWithSearchBar"),
+  {
+    ssr: false,
+  },
+);
+
+const ConcertGrid = dynamic(() => import("./components/ConcertGridWrapper"), {
+  ssr: false,
+});
 
 const HomePage = () => {
   return (
     <>
       <NavbarWithSearchBar />
       <HeroSection />
-      {/* <Searchbar /> */}
       <ConcertGrid />
       <Footer />
     </>
