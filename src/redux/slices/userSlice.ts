@@ -9,7 +9,6 @@ export interface UserState {
   profilePicture: string;
   role: string;
   totalPoints: number;
-
   token: string;
 }
 
@@ -22,7 +21,7 @@ const initialState: UserState = {
   address: "",
   profilePicture: "",
   role: "",
-  totalPoints: 0
+  totalPoints: 0,
 };
 
 export const userSlice = createSlice({
