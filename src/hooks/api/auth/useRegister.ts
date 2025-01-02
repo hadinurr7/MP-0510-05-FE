@@ -15,6 +15,7 @@ interface RegisterPayload {
 
 const useRegister = () => {
   const router = useRouter();
+
   return useMutation({
     mutationFn: async (payload: RegisterPayload) => {
       const { data } = await axiosInstance.post("/auth/register", payload);
