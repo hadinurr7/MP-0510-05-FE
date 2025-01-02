@@ -2,27 +2,26 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface UserState {
   id: number;
-  name: string;
+  fullname: string;
   email: string;
   phoneNumber: string;
   address: string;
   profilePicture: string;
   role: string;
   totalPoints: number;
-
   token: string;
 }
 
 const initialState: UserState = {
   id: 0,
-  name: "",
+  fullname: "",
   email: "",
   token: "",
   phoneNumber: "",
   address: "",
   profilePicture: "",
   role: "",
-  totalPoints: 0
+  totalPoints: 0,
 };
 
 export const userSlice = createSlice({
@@ -31,7 +30,7 @@ export const userSlice = createSlice({
   reducers: {
     loginAction: (state, action: PayloadAction<UserState>) => {
       state.id = action.payload.id;
-      state.name = action.payload.name;
+      state.fullname = action.payload.fullname;
       state.email = action.payload.email;
       state.token = action.payload.token;
       state.profilePicture = action.payload.profilePicture;
@@ -40,7 +39,7 @@ export const userSlice = createSlice({
     },
     logoutAction: (state) => {
       state.id = 0;
-      state.name = "";
+      state.fullname = "";
       state.email = "";
       state.token = "";
       state.profilePicture = "";
@@ -48,9 +47,9 @@ export const userSlice = createSlice({
       state.role = "";
     },
     updateUserAction: (state, action: PayloadAction<Partial<UserState>>) => {
-      const { id, name, email, phoneNumber, address, profilePicture } = action.payload;
+      const { id, fullname, email, phoneNumber, address, profilePicture } = action.payload;
       if (id !== undefined) state.id = id;
-      if (name !== undefined) state.name = name;
+      if (fullname !== undefined) state.fullname = fullname;
       if (email !== undefined) state.email = email;
       if (phoneNumber !== undefined) state.phoneNumber = phoneNumber;
       if (address !== undefined) state.address = address;
