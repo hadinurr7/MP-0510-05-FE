@@ -26,8 +26,8 @@ const useRegister = () => {
       router.replace("/login");
     },
     onError: (error: AxiosError<any>) => {
-      toast.error(error.response?.data);
-      toast.error(error.response?.data.message);
+      const errorMessage = error.response?.data?.message || "Registration failed. Please try again.";
+      toast.error(errorMessage);
     },
   });
 };
