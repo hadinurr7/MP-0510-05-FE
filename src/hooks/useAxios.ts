@@ -1,47 +1,48 @@
-// "use client";
 
-// import { axiosInstance } from "@/lib/axios";
-// import { useQueryClient } from "@tanstack/react-query";
-// import { getSession, signOut } from "next-auth/react";
-// import { useEffect } from "react";
+"use client";
 
-// const useAxios = () => {
-//   const queryClient = useQueryClient();
+import { axiosInstance } from "@/lib/axios";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { logoutAction } from "@/redux/slices/userSlice";
+import { useEffect } from "react";
 
-//   useEffect(() => {
-//     const requestIntercept = axiosInstance.interceptors.request.use(
-//       async (config) => {
-//         const session = await getSession();
-//         const token = session?.user.token;
-//         if (token) {
-//           config.headers.Authorization = `Bearer ${token}`;
-//         }
-//         return config;
-//       },
-//       (error) => {
-//         return Promise.reject(error);
-//       }
-//     );
+const useAxios = () => {
+  const dispatch = useAppDispatch();
+  const { token } = useAppSelector((state) => state.user);
 
-//     const responseIntercept = axiosInstance.interceptors.response.use(
-//       (response) => response,
-//       async (err) => {
-//         if (err?.response.status === 401) {
-//           await signOut();
-//           queryClient.removeQueries();
-//         }
+  useEffect(() => {
+    const requestIntercept = axiosInstance.interceptors.request.use(
+      (config) => {
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      },
+    );
 
-//         return Promise.reject(err);
-//       }
-//     );
+    const responseIntercept = axiosInstance.interceptors.response.use(
+      (response) => response,
+      (err) => {
+        if (err?.response.status === 401) {
+          localStorage.removeItem("event-storage");
 
-//     return () => {
-//       axiosInstance.interceptors.request.eject(requestIntercept);
-//       axiosInstance.interceptors.response.eject(responseIntercept);
-//     };
-//   }, [queryClient, signOut]);
+          dispatch(logoutAction());
+        }
 
-//   return { axiosInstance };
-// };
+        return Promise.reject(err);
+      },
+    );
 
-// export default useAxios;
+    return () => {
+      axiosInstance.interceptors.request.eject(requestIntercept);
+      axiosInstance.interceptors.response.eject(responseIntercept);
+    };
+  }, [token, dispatch]);
+
+  return { axiosInstance };
+};
+
+export default useAxios;
