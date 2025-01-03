@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -13,6 +14,7 @@ function makeQueryClient() {
         staleTime: 60 * 1000,
       },
     },
+
   });
 }
 
