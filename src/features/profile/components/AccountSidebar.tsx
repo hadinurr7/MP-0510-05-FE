@@ -28,7 +28,7 @@ export function AccountSidebar() {
                     {item.onClick ? (
                       <button
                         onClick={item.onClick}
-                        className="flex items-center gap-4 px-6 py-2 hover:bg-gray-600 rounded-md transition-all w-full text-left"
+                        className="flex items-center gap-4 px-6 py-2 hover:bg-gray-100 rounded-md transition-all w-full text-left"
                       >
                         <item.icon className="h-6 w-6" />
                         <span className="text-lg">{item.title}</span>
@@ -36,7 +36,7 @@ export function AccountSidebar() {
                     ) : (
                       <a
                         href={item.url}
-                        className="flex items-center gap-4 px-6 py-2 hover:bg-gray-600 rounded-md transition-all"
+                        className="flex items-center gap-4 px-6 py-2 hover:bg-gray-100 rounded-md transition-all"
                       >
                         <item.icon className="h-6 w-6" />
                         <span className="text-lg">{item.title}</span>
