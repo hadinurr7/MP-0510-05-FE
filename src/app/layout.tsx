@@ -3,9 +3,10 @@ import localFont from "next/font/local";
 import "./globals.css";
 
 import StoreProvider from "@/providers/StoreProvider";
-import AuthProvider from "@/providers/AuthProvider";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { ToastContainer } from "react-toastify";
+import NuqsProvider from "@/providers/NuqsProvider";
+import NextAuthProvider from "@/providers/NextAuthProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,15 +34,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-
-        <StoreProvider>
-          <AuthProvider>
-            <ReactQueryProvider>
-                {children}
-            </ReactQueryProvider>
-            <ToastContainer />
-          </AuthProvider>
-        </StoreProvider>
+        <NextAuthProvider>
+          <NuqsProvider>
+            <StoreProvider>
+              <ReactQueryProvider>{children}</ReactQueryProvider>
+              <ToastContainer />
+            </StoreProvider>
+          </NuqsProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );
