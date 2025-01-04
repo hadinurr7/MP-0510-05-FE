@@ -223,6 +223,7 @@ export default function ProfilePage() {
               />
             </CardContent>
 
+
             <CardFooter className="flex items-center justify-start space-x-4">
               {isEdited ? (
                 <>
