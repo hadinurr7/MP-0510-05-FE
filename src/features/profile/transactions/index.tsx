@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -18,7 +18,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FaSort, FaEllipsisV } from "react-icons/fa";
-import ProfileLayout from "../ProfileLayout";
 import { useSession } from "next-auth/react";
 import useGetTransactions from "@/hooks/api/transactions/useGetTransactions";
 import LoadingScreen from "@/app/components/LoadingScreen";
@@ -48,9 +47,7 @@ export default function UserTransactionHistory() {
 
     const filtered = data.filter((transaction) => {
       const { id, name } = transaction;
-      // Filter by either transaction ID or name
       return (
-        transaction.id,
         transaction.event.name.toLowerCase().includes(search.toLowerCase())
       );
     });
@@ -76,26 +73,21 @@ export default function UserTransactionHistory() {
 
   if (isPendingGet) {
     return (
-      <ProfileLayout>
         <div className="flex h-full items-center justify-center">
           <LoadingScreen />
         </div>
-      </ProfileLayout>
     );
   }
 
   if (error) {
     return (
-      <ProfileLayout>
         <div className="flex h-full items-center justify-center">
           <ErrorLoading />
         </div>
-      </ProfileLayout>
     );
   }
 
   return (
-    <ProfileLayout>
       <div className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
         <h1 className="mb-5 text-2xl font-bold">Transaction History</h1>
         <form className="mb-4">
@@ -194,6 +186,5 @@ export default function UserTransactionHistory() {
           </Table>
         </div>
       </div>
-    </ProfileLayout>
   );
 }

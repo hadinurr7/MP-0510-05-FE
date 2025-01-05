@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios";
 import { Transactions } from "@/types/transactions";
 
+
+
 interface GetTransactionsQueries {
   token: string | undefined;
 }
@@ -14,9 +16,7 @@ const useGetTransactions = ({ token }: GetTransactionsQueries) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
-      console.log("ini data", data);
-      
+      });      
       return data;
     },
     enabled: !!token,

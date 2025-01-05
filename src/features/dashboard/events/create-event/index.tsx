@@ -1,14 +1,11 @@
 import React from 'react'
-import DashboardLayout from '../../DashboardLayout'
 
 const CreateEventPage = () => {
   return (
-    <DashboardLayout>
-    <div className="w-screen h-screen">
+    <div className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
       <h1 className="text-2xl font-bold">Crate Events</h1>
       <p>Create Events.</p>
     </div>
-  </DashboardLayout>
   )
 }
 

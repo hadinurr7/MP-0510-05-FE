@@ -1,4 +1,5 @@
 export interface PaginationQueries {
+    token?:string
     take?: number;
     page?: number;
     sortBy?: string;

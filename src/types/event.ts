@@ -12,8 +12,11 @@ export interface Event {
   endDate: string;
   price: number;
   availableSeats: number;
-  
   createdAt: string;
   updatedAt: string;
 
+  city : string
+category : string
 }
+
+

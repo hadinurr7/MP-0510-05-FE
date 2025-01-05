@@ -21,7 +21,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FaSearch, FaSort, FaEllipsisH, FaFilter } from "react-icons/fa";
-import DashboardLayout from "../DashboardLayout";
 
 interface Status {
   code: "ACCEPTED" | "REJECTED" | "FAILED" | "REFUNDED";
@@ -152,8 +151,7 @@ export default function AdminTransactionHistory() {
   };
 
   return (
-    <DashboardLayout>
-      <div className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
+      <div className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
         <h1 className="mb-5 text-2xl font-bold">Transaction History</h1>
         <div className="mb-4 flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="relative w-full sm:w-auto">
@@ -445,7 +443,6 @@ export default function AdminTransactionHistory() {
           )}
         </div>
       </div>
-    </DashboardLayout>
   );
 }
 

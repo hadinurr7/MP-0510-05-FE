@@ -41,7 +41,7 @@ export const LoginPage = () => {
               <form onSubmit={formik.handleSubmit}>
                 <div className="w-full items-center gap-6">
                   <div className="mb-4 flex flex-col space-y-1.5">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">Email<span className="text-red-600">*</span></Label>
                     <div className="flex items-center gap-2 rounded-2xl border border-black p-2">
                       <MdOutlineEmail className="text-gray-500" size={20} />
                       <Input
@@ -52,6 +52,7 @@ export const LoginPage = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         className="flex-1 border-none p-2 outline-none focus:outline-none focus:ring-0"
+                        required
                       />
                     </div>
                     {!!formik.touched.email && !!formik.errors.email ? (
@@ -62,7 +63,7 @@ export const LoginPage = () => {
                   </div>
 
                   <div className="mb-4 flex flex-col space-y-1.5">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">Password<span className="text-red-600">*</span></Label>
                     <div className="flex items-center gap-2 rounded-2xl border border-black p-2">
                       <MdLockOutline className="text-gray-500" size={20} />
                       <Input
@@ -73,6 +74,7 @@ export const LoginPage = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         className="flex-1 border-none p-2 outline-none focus:outline-none focus:ring-0"
+                        required
                       />
                       <Button
                         type="button"
