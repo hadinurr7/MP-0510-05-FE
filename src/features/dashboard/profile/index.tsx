@@ -16,11 +16,11 @@ import { useFormik } from "formik";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import validationUpdateProfile from "./schema";
 import { FaPencilAlt } from "react-icons/fa";
 import useGetUserProfile from "@/hooks/api/user/useGetUsersProfile";
 import LoadingScreen from "@/app/components/LoadingScreen";
 import ErrorLoading from "@/app/components/ErrorLoading";
+import validationUpdateProfile from "./schema";
 
 export default function ProfilePage() {
   const { data: session, update: updateSession } = useSession();
@@ -47,7 +47,7 @@ export default function ProfilePage() {
     onSubmit: async (values) => {
       const updatedValues = {
         ...values,
-        profilePicture: values.profilePicture || null, // cek pp
+        profilePicture: values.profilePicture || null,
       };
       await updateProfile(updatedValues);
       await updateSession(updatedValues);

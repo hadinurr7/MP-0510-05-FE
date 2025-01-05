@@ -8,15 +8,13 @@ interface GetTransactionsQueries {
 
 const useGetTransactions = ({ token }: GetTransactionsQueries) => {
   return useQuery({
-    queryKey: ["transactions",token],
+    queryKey: ["transactions", token],
     queryFn: async () => {
       const { data } = await axiosInstance.get<Transactions>("/transactions", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("ini data", data);
-      
       return data;
     },
     enabled: !!token,

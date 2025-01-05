@@ -229,7 +229,7 @@
 //                           className="text-purple-600 underline underline-offset-2 hover:text-purple-700"
 //                         >
 //                           Login
-//                         </Link>{" "}
+//                         </Link> "}
 //                         as Customer to Book Ticket
 //                       </p>
 //                     )}
