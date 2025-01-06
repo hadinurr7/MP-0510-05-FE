@@ -1,17 +1,29 @@
 "use client";
+
 import useAxios from "@/hooks/useAxios";
-import { Voucher } from "@/types/vouchert";
+import { Voucher } from "@/types/voucher";
 import { useQuery } from "@tanstack/react-query";
 
-const useGetVouchers = () => {
+interface GetVouchersQueries {
+  token: string | undefined;
+}
+
+const useGetVouchers = ({token}:GetVouchersQueries) => {
   const { axiosInstance } = useAxios();
 
   return useQuery({
-    queryKey: ["vouchers"],
+    queryKey: ["vouchers", token],
     queryFn: async () => {
-      const { data } = await axiosInstance.get<Voucher[]>("/vouchers");
+      const { data } = await axiosInstance.get<Voucher[]>("/vouchers",{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return data || [];
     },
+
+    enabled: !!token,
+
   });
 };
 

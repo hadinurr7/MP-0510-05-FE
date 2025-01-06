@@ -32,6 +32,9 @@ interface Transaction {
   name: string;
   createdAt: string;
   updatedAt: string;
+  event: {
+    name: string;
+  };
 }
 
 export default function UserTransactionHistory() {
@@ -46,10 +49,7 @@ export default function UserTransactionHistory() {
     if (!data || !Array.isArray(data)) return [];
 
     const filtered = data.filter((transaction) => {
-      const { id, name } = transaction;
-      return (
-        transaction.event.name.toLowerCase().includes(search.toLowerCase())
-      );
+      return transaction.event?.name.toLowerCase().includes(search.toLowerCase());
     });
 
     // Sort transactions based on createdAt
@@ -117,7 +117,11 @@ export default function UserTransactionHistory() {
                   className="p-0 text-black font-bold"
                 >
                   Date
-                  <FaSort className="ml-2 h-4 w-4" />
+                  {sortDirection === "asc" ? (
+                    <FaSort className="ml-2 h-4 w-4 rotate-180" />
+                  ) : (
+                    <FaSort className="ml-2 h-4 w-4" />
+                  )}
                 </Button>
               </TableHead>
               <TableHead className="text-center text-black font-bold">Name</TableHead>
@@ -128,60 +132,70 @@ export default function UserTransactionHistory() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredAndSortedTransactions.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell className="text-center">{transaction.id}</TableCell>
-                <TableCell className="text-center">{format(parseISO(transaction.createdAt), "dd MMM yyyy")}</TableCell>
-                <TableCell className="text-center">{transaction.event.name}</TableCell>
-                <TableCell className="text-center">{transaction.qty}</TableCell>
-                <TableCell className="text-center">
-                  {new Intl.NumberFormat("id-ID", {
-                    style: "currency",
-                    currency: "IDR",
-                  }).format(transaction.totalPrice)}
-                </TableCell>
-                <TableCell className="text-center">
-                  <span
-                    className={`inline-block px-3 py-1 text-sm font-semibold rounded-full ${
-                      transaction.status === "SUCCESS"
-                        ? "bg-green-200 text-green-600"
-                        : transaction.status === "PENDING"
-                        ? "bg-yellow-100 text-yellow-600"
-                        : transaction.status === "FAILED"
-                        ? "bg-red-200 text-red-800"
-                        : transaction.status === "CANCELED"
-                        ? "bg-gray-200 text-gray-600"
-                        : ""
-                    }`}
-                  >
-                    {transaction.status}
-                  </span>
-                </TableCell>
-                <TableCell className="text-center">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <FaEllipsisV className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => alert(`Viewing details for transaction ${transaction.id}`)}>
-                        View Details
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => alert(`Downloading receipt for transaction ${transaction.id}`)}>
-                        Download Receipt
-                      </DropdownMenuItem>
-                      {transaction.status === "ACCEPTED" && (
-                        <DropdownMenuItem onClick={() => alert(`Requesting refund for transaction ${transaction.id}`)}>
-                          Request Refund
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+            {filteredAndSortedTransactions.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center">
+                  No transactions found.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              filteredAndSortedTransactions.map((transaction) => (
+                <TableRow key={transaction.id}>
+                  <TableCell className="text-center">{transaction.id}</TableCell>
+                  <TableCell className="text-center">
+                    {format(parseISO(transaction.createdAt), "dd MMM yyyy")}
+                  </TableCell>
+                  <TableCell className="text-center">{transaction.event.name}</TableCell>
+                  <TableCell className="text-center">{transaction.qty}</TableCell>
+                  <TableCell className="text-center">
+                    {new Intl.NumberFormat("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    }).format(transaction.totalPrice)}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span
+                      className={`inline-block px-3 py-1 text-sm font-semibold rounded-full ${
+                        transaction.status === "SUCCESS"
+                          ? "bg-green-200 text-green-600"
+                          : transaction.status === "PENDING"
+                          ? "bg-yellow-100 text-yellow-600"
+                          : transaction.status === "FAILED"
+                          ? "bg-red-200 text-red-800"
+                          : transaction.status === "CANCELED"
+                          ? "bg-gray-200 text-gray-600"
+                          : ""
+                      }`}
+                    >
+                      {transaction.status}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <FaEllipsisV className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => alert(`Viewing details for transaction ${transaction.id}`)}>
+                          View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => alert(`Downloading receipt for transaction ${transaction.id}`)}>
+                          Download Receipt
+                        </DropdownMenuItem>
+                        {transaction.status === "ACCEPTED" && (
+                          <DropdownMenuItem onClick={() => alert(`Requesting refund for transaction ${transaction.id}`)}>
+                            Request Refund
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

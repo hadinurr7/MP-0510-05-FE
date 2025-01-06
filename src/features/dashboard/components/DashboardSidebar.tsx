@@ -22,9 +22,8 @@ const items = [
       { title: "Create Vouchers", url: "/dashboard/vouchers/create-vouchers", icon: FaTicketAlt }
     ]
   },
-  { title: "Coupons", url: "/dashboard/coupons", icon: FaTags },
   { title: "Transactions", url: "/dashboard/transactions", icon: FaCreditCard },
-  { title: "profile", url: "/dashboard/profile", icon: FaCog },
+  { title: "profile", url: "/dashboard/organizer/profile", icon: FaCog },
   { title: "Log Out", icon: FaSignOutAlt, onClick: () => signOut({ callbackUrl: "/login" }) },
 ];
 
