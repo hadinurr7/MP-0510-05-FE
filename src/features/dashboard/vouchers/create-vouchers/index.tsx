@@ -24,7 +24,7 @@ const CreateVoucherPage = () => {
   const { data: session } = useSession();
   const token = session?.user.token;
   const { mutateAsync: createVoucher, isPending } = useCreateVoucher(token || "");
-  const { data: events } = useGetEventsByUser({ token });
+  const { data: events } = useGetEventsByUser(token || "");
 
   const formik = useFormik({
     initialValues: {

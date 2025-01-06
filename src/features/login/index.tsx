@@ -109,6 +109,13 @@ export const LoginPage = () => {
                 <Link href="/forgot-password" className="text-blue-500">
                   Forgot password?
                 </Link>
+
+                <div>
+                  <span>dont have an account? </span>
+                <Link href="/register" className="text-blue-500">
+                    Register
+                </Link>
+                </div>
               </div>
             </CardContent>
           </Card>
