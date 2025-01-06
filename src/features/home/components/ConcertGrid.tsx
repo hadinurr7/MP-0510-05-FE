@@ -3,14 +3,15 @@
 
 import React, { useState, Suspense } from "react";
 import ConcertCard from "./ConcertCard";
-import useGetEvents from "@/hooks/api/useGetEvents";
-import useFormatRupiah from "@/hooks/api/useFormatRupiah";
-import useGetCategories from "@/hooks/api/useGetCategories";
-import useGetCities from "@/hooks/api/useGetCities";
+
 import { useDebounce } from "use-debounce";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Event } from "@/types/event";
 import Link from "next/link";
+import useGetCategories from "@/hooks/api/event/useGetCategories";
+import useGetCities from "@/hooks/api/event/useGetCities";
+import useGetEvents from "@/hooks/api/event/useGetEvents";
+import useFormatRupiah from "@/hooks/api/event/useFormatRupiah";
 
 const ConcertGrid = () => {
   const [page, setPage] = useState<number>(1);

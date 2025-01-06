@@ -19,11 +19,12 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { createEventSchema } from "./schemas";
-import useCreateEvent, { CreateEventPayload } from "@/hooks/api/useCreateEvent";
-import useGetCategories from "@/hooks/api/useGetCategories";
-import useGetCities from "@/hooks/api/useGetCities";
+
 import { Button } from "@/components/ui/button";
 import RichTextEditor from "@/components/RichTextEditor";
+import useCreateEvent, { CreateEventPayload } from "@/hooks/api/event/useCreateEvent";
+import useGetCities from "@/hooks/api/event/useGetCities";
+import useGetCategories from "@/hooks/api/event/useGetCategories";
 
 const CreateEventComponent = () => {
   const router = useRouter();

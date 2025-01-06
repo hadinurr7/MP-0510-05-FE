@@ -5,11 +5,12 @@ import { CalendarIcon, Clock, MapPin } from "lucide-react";
 import EventDescription from "./components/EventDescription";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
-import useGetCategories from "@/hooks/api/useGetCategories";
-import useGetCities from "@/hooks/api/useGetCities";
-import useGetEvent from "@/hooks/api/UseGetEvent";
+
 import { Category } from "@/types/category";
 import { City } from "@/types/city";
+import useGetEvent from "@/hooks/api/event/UseGetEvent";
+import useGetCategories from "@/hooks/api/event/useGetCategories";
+import useGetCities from "@/hooks/api/event/useGetCities";
 
 interface EventDetailProps {
   eventId: number;
