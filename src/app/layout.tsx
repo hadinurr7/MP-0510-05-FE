@@ -7,6 +7,9 @@ import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { ToastContainer } from "react-toastify";
 import NuqsProvider from "@/providers/NuqsProvider";
 import NextAuthProvider from "@/providers/NextAuthProvider";
+import Navbar from "@/components/Navbar";
+// Hapus import Footer dari react-day-picker
+import Footer from "@/components/Footer"; // Gunakan Footer custom Anda
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -37,7 +40,11 @@ export default function RootLayout({
         <NextAuthProvider>
           <NuqsProvider>
             <StoreProvider>
-              <ReactQueryProvider>{children}</ReactQueryProvider>
+              <ReactQueryProvider>
+                <Navbar />
+                {children}
+                <Footer />
+              </ReactQueryProvider>
               <ToastContainer />
             </StoreProvider>
           </NuqsProvider>
