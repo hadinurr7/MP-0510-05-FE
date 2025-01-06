@@ -15,8 +15,8 @@ export interface Event {
   availableSeats: number;
   createdAt: string;
   updatedAt: string;
-  city: string;
-  category: string;
+  cities: string;
+  categories: string;
 }
 
 export interface EventResponse {

@@ -2,6 +2,7 @@
 import dynamic from "next/dynamic";
 import Footer from "@/components/Footer";
 import HeroSection from "./components/HeroSection";
+import Searchbar from "@/components/SearchBarDummy";
 
 const NavbarWithSearchBar = dynamic(
   () => import("@/components/NavbarWithSearchBar"),
@@ -18,6 +19,7 @@ const HomePage = () => {
   return (
     <>
       <HeroSection />
+      <Searchbar />
       <ConcertGrid />
     </>
   );
