@@ -1,8 +1,12 @@
 import RegisterPage from "@/features/register";
 import React from "react";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-const register = () => {
+const Register = async () => {
+  const session = await auth();
+  if (session) return redirect("/login");
   return <RegisterPage />;
 };
 
-export default register;
+export default Register;

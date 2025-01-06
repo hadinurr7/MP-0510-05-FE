@@ -1,17 +1,28 @@
 "use client";
 import useAxios from "@/hooks/useAxios";
-import { Event } from "@/types/event";
+import { Event, EventResponse } from "@/types/event";
 import { useQuery } from "@tanstack/react-query";
 
-const useGetEventsByUser = () => {
+interface GetEventsQueries {
+  token: string | undefined;
+}
+
+
+const useGetEventsByUser = ({token}:GetEventsQueries) => {
   const { axiosInstance } = useAxios();
 
   return useQuery({
-    queryKey: ["eventsByUser"],
+    queryKey: ["events"],
     queryFn: async () => {
-      const { data } = await axiosInstance.get<Event[]>("/events");
-      return data || [];
+      const { data } = await axiosInstance.get<EventResponse>("/events",{
+        headers: {
+          Authorization:`Bearer ${token}`
+        },
+      });
+      return data || {data:[]};
     },
+        enabled: !!token,
+
   });
 };
 

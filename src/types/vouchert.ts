@@ -3,7 +3,7 @@ export interface Voucher {
     voucherCode: string;
     qty: number;
     value: number;
-    validUntill: Date;
+    validUntil: Date;
     event: {
       id: number;
       name: string;

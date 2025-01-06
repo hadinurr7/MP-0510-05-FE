@@ -1,8 +1,8 @@
-import EditEventPage from "@/features/dashboard/events/edit-events";
-import React from "react";
+// import EditEventPage from "@/features/dashboard/events/edit-events";
+// import React from "react";
 
-const EditEvent = () => {
-  return <EditEventPage />;
-};
+// const EditEvent = () => {
+//   return <EditEventPage />;
+// };
 
-export default EditEvent;
+// export default EditEvent;

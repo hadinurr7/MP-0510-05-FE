@@ -1,4 +1,5 @@
 export interface Transactions {
+    transactions: any
     length: number
     id : number
     name:string

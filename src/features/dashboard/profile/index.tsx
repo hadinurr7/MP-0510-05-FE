@@ -47,7 +47,7 @@ export default function ProfilePage() {
     onSubmit: async (values) => {
       const updatedValues = {
         ...values,
-        profilePicture: values.profilePicture || null,
+        profilePicture: values.profilePicture || null, // cek pp
       };
       await updateProfile(updatedValues);
       await updateSession(updatedValues);
@@ -98,8 +98,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
-        <Card className="flex flex-1 flex-col">
+      <div className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
+        <Card className="flex flex-1 flex-col border-none shadow-none">
           <CardHeader className="text-start">
             <CardTitle className="text-2xl">Personal Information</CardTitle>
           </CardHeader>
@@ -193,31 +193,6 @@ export default function ProfilePage() {
               )}
             </CardContent>
 
-            <CardContent className="mb-4 w-full space-y-2 rounded-2xl border border-gray-300 p-4">
-              <Label htmlFor="points" className="text-xl">
-                My Points
-              </Label>
-              <Input
-                id="points"
-                value={formik.values.totalPoints}
-                readOnly
-                className="rounded-md border border-gray-300 p-2 text-lg"
-              />
-            </CardContent>
-
-            <CardContent className="mb-4 w-full space-y-2 rounded-2xl border border-gray-300 p-4">
-              <Label htmlFor="referralCode" className="text-xl">
-                My Referral Code
-              </Label>
-              <Input
-                id="referralCode"
-                value={formik.values.referralCode}
-                readOnly
-                className="rounded-md border border-gray-300 p-2 text-lg"
-              />
-            </CardContent>
-
-
             <CardFooter className="flex items-center justify-start space-x-4">
               {isEdited ? (
                 <>
@@ -228,8 +203,8 @@ export default function ProfilePage() {
                     onChange={() => {
                       setIsEdited;
                     }}
-                    className="w-36 text-lg"
-                  >
+                    className="bg-blue-500 font-medium hover:bg-blue-600"
+                    >
                     {isPending ? "Saving..." : "Save Changes"}
                   </Button>
 
@@ -252,8 +227,8 @@ export default function ProfilePage() {
                     e.preventDefault(); // Mencegah form submit jika ada event submit lainnya
                     setIsEdited(true);
                   }}
-                  className="w-36 text-lg"
-                >
+                  className="bg-blue-500 font-medium hover:bg-blue-600"
+                  >
                   <FaPencilAlt className="mr-2 h-4 w-4" /> Edit Profile
                 </Button>
               )}
