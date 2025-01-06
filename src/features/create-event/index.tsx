@@ -253,6 +253,7 @@ const CreateEventComponent = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
+                    
                     {cities.data?.map(
                       (city: { id: number; name: string }) => (
                         <SelectItem

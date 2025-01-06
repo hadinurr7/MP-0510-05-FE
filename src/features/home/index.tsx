@@ -17,10 +17,8 @@ const ConcertGrid = dynamic(() => import("./components/ConcertGridWrapper"), {
 const HomePage = () => {
   return (
     <>
-      <NavbarWithSearchBar />
       <HeroSection />
       <ConcertGrid />
-      <Footer />
     </>
   );
 };

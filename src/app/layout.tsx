@@ -6,6 +6,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 import NextAuthProvider from "@/providers/NextAuthProvider";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer"; // Gunakan Footer custom Anda
 import NuqsProvider from "@/providers/NuqsProvider";
 
 const geistSans = localFont({
@@ -35,14 +37,17 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextAuthProvider>
-        <NuqsProvider>
-        <StoreProvider>
-            <ReactQueryProvider>
+          <NuqsProvider>
+            <StoreProvider>
+              <ReactQueryProvider>
+                <Navbar />
                 {children}
-            </ReactQueryProvider>
-            <ToastContainer />
-        </StoreProvider>
-        </NuqsProvider>
+                <Footer />
+              </ReactQueryProvider>
+              <ToastContainer />
+            </StoreProvider>
+          </NuqsProvider>
+
         </NextAuthProvider>
       </body>
     </html>

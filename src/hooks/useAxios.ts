@@ -1,4 +1,3 @@
-
 "use client";
 
 import { axiosInstance } from "@/lib/axios";
@@ -8,7 +7,7 @@ import { useEffect } from "react";
 
 const useAxios = () => {
   const dispatch = useAppDispatch();
-  const { token } = useAppSelector((state) => state.user);
+  const { token } = useAppSelector((state: any) => state.user);
 
   useEffect(() => {
     const requestIntercept = axiosInstance.interceptors.request.use(
