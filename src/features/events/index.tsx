@@ -1,4 +1,3 @@
-// features/event/index.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";

@@ -14,7 +14,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import DashboardLayout from "./DashboardLayout";
 
 const chartData = [
   { month: "January", desktop: 186, mobile: 80 },
@@ -38,8 +37,7 @@ const chartConfig = {
 
 const DashboardPage = () => {
   return (
-    <DashboardLayout>
-      <div className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
+    <div className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
         <h1 className="text-2xl font-bold">Dashboard Utama</h1>
         <p className="mb-8">Selamat datang di halaman utama Dashboard.</p>
 
@@ -132,7 +130,6 @@ const DashboardPage = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   );
 };
 

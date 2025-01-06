@@ -34,7 +34,7 @@ const ForgotPasswordPage = () => {
               <form onSubmit={formik.handleSubmit}>
                 <div className="w-full items-center gap-6">
                   <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">Email<span className="text-red-600">*</span></Label>
                     <div className="flex items-center gap-2 rounded-2xl border border-black p-2">
                       <MdOutlineEmail className="text-gray-500" size={20} />
                       <Input
@@ -45,6 +45,7 @@ const ForgotPasswordPage = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         className="flex-1 border-none p-2 outline-none focus:outline-none focus:ring-0"
+                        required
                       />
                     </div>
                     {!!formik.touched.email && !!formik.errors.email ? (

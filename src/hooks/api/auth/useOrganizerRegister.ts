@@ -15,11 +15,11 @@ interface RegisterPayload {
 const useOrganizerRegister = () => {
   return useMutation({
     mutationFn: async (payload: RegisterPayload) => {
-      const { data } = await axiosInstance.post("/auth/organizer", payload);
+      const { data } = await axiosInstance.post("/auth/register/organizer", payload);
       return data;
     },
     onSuccess: () => {
-      toast.success("Registration successful");
+      toast.success("Organizer registration successful");
     },
     onError: (error: AxiosError<any>) => {
       const errorMessage = error.response?.data?.message || "Registration failed. Please try again.";

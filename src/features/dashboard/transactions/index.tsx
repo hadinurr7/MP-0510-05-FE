@@ -1,451 +1,234 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
+  TableHead,
 } from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { FaSearch, FaSort, FaEllipsisH, FaFilter } from "react-icons/fa";
-import DashboardLayout from "../DashboardLayout";
-
-interface Status {
-  code: "ACCEPTED" | "REJECTED" | "FAILED" | "REFUNDED";
-  label: string;
-  color: string;
-}
-
-const STATUSES: Status[] = [
-  { code: "ACCEPTED", label: "Accepted", color: "bg-green-100 text-green-800" },
-  { code: "REJECTED", label: "Rejected", color: "bg-red-100 text-red-800" },
-  { code: "FAILED", label: "Failed", color: "bg-orange-100 text-orange-800" },
-  { code: "REFUNDED", label: "Refunded", color: "bg-blue-100 text-blue-800" },
-];
+import { FaSort, FaEllipsisV } from "react-icons/fa";
+import { useSession } from "next-auth/react";
+import useGetTransactions from "@/hooks/api/transactions/useGetTransactions";
+import LoadingScreen from "@/app/components/LoadingScreen";
+import ErrorLoading from "@/app/components/ErrorLoading";
+import { format, parseISO } from "date-fns";
+import axios from "axios";
 
 interface Transaction {
   id: string;
-  date: string;
-  amount: number;
-  status: Status["code"];
-  customer: string;
-  paymentMethod: string;
+  qty: number;
+  totalPrice: number;
+  status: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  event: {
+    name: string;
+  };
+  paymentProof?: string;
 }
 
-const initialTransactions: Transaction[] = [
-  {
-    id: "INV001",
-    date: "2023-05-01",
-    amount: 250.0,
-    status: "ACCEPTED",
-    customer: "John Doe",
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: "INV002",
-    date: "2023-05-03",
-    amount: 150.5,
-    status: "REJECTED",
-    customer: "Jane Smith",
-    paymentMethod: "PayPal",
-  },
-  {
-    id: "INV003",
-    date: "2023-05-05",
-    amount: 350.75,
-    status: "FAILED",
-    customer: "Alice Johnson",
-    paymentMethod: "Debit Card",
-  },
-  {
-    id: "INV004",
-    date: "2023-05-07",
-    amount: 450.25,
-    status: "REFUNDED",
-    customer: "Bob Brown",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "INV005",
-    date: "2023-05-09",
-    amount: 550.0,
-    status: "ACCEPTED",
-    customer: "Charlie Davis",
-    paymentMethod: "Credit Card",
-  },
-];
+export default function UserTransactionHistory() {
+  const { data: session } = useSession();
+  const token = session?.user?.token;
 
-export default function AdminTransactionHistory() {
-  const [transactions, setTransactions] =
-    useState<Transaction[]>(initialTransactions);
-  const [sortColumn, setSortColumn] = useState<keyof Transaction | null>(null);
+  const { data, isPending: isPendingGet, error } = useGetTransactions({ token });
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<Status["code"] | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkIsMobile();
-    window.addEventListener("resize", checkIsMobile);
-    return () => window.removeEventListener("resize", checkIsMobile);
-  }, []);
+  const filteredAndSortedTransactions = useMemo(() => {
+    if (!data || !Array.isArray(data)) return [];
 
-  const filteredAndSortedTransactions = transactions
-    .filter(
-      (transaction) =>
-        (statusFilter === null || transaction.status === statusFilter) &&
-        Object.values(transaction).some((value) =>
-          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    )
-    .sort((a, b) => {
-      if (sortColumn === null) return 0;
-      const aValue = a[sortColumn];
-      const bValue = b[sortColumn];
-
-      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-      return 0;
+    const filtered = data.filter((transaction) => {
+      return transaction.event?.name.toLowerCase().includes(search.toLowerCase());
     });
 
-  const handleSort = (column: keyof Transaction) => {
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(column);
-      setSortDirection("asc");
+    return filtered.sort((a, b) => {
+      const aDate = parseISO(a.createdAt);
+      const bDate = parseISO(b.createdAt);
+
+      return sortDirection === "asc"
+        ? aDate.getTime() - bDate.getTime()
+        : bDate.getTime() - aDate.getTime();
+    });
+  }, [data, search, sortDirection]);
+
+  const handleSort = () => {
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+  };
+
+  const updateTransactionStatus = async (transactionId: string, status: string) => {
+    try {
+      const response = await axios.patch(
+        `/api/transactions/${transactionId}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        console.log("Transaction status updated successfully!");
+      }
+    } catch (error) {
+      console.error("Failed to update transaction status", error);
     }
   };
 
-  const toggleStatusFilter = (statusCode: Status["code"] | null) => {
-    setStatusFilter((prev) => (prev === statusCode ? null : statusCode));
+  const handleAcceptTransaction = (transactionId: string) => {
+    updateTransactionStatus(transactionId, "SUCCESS");
   };
 
-  const updateTransactionStatus = (id: string, newStatus: Status["code"]) => {
-    setTransactions((prevTransactions) =>
-      prevTransactions.map((transaction) =>
-        transaction.id === id
-          ? { ...transaction, status: newStatus }
-          : transaction
-      )
+  const handleRejectTransaction = (transactionId: string) => {
+    updateTransactionStatus(transactionId, "CANCELED");
+  };
+
+  if (isPendingGet) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <LoadingScreen />
+      </div>
     );
-  };
+  }
 
-  const getStatusDetails = (statusCode: Status["code"]): Status => {
-    return STATUSES.find((status) => status.code === statusCode) || STATUSES[0];
-  };
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <ErrorLoading />
+      </div>
+    );
+  }
 
   return (
-    <DashboardLayout>
-      <div className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
-        <h1 className="mb-5 text-2xl font-bold">Transaction History</h1>
-        <div className="mb-4 flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="relative w-full sm:w-auto">
-            <FaSearch className="absolute left-2 top-1/2 -translate-y-1/2 transform text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Search transactions..."
-              className="w-full pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
-                <FaFilter className="mr-2 h-4 w-4" />
-                {statusFilter
-                  ? getStatusDetails(statusFilter).label
-                  : "Filter Status"}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onSelect={() => toggleStatusFilter(null)}>
-                All Statuses
-              </DropdownMenuItem>
-              {STATUSES.map((status) => (
-                <DropdownMenuItem
-                  key={status.code}
-                  onSelect={() => toggleStatusFilter(status.code)}
-                >
-                  {status.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+    <div className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
+      <h1 className="mb-5 text-2xl font-bold">Transaction History</h1>
+      <form className="mb-4">
+        <div className="relative w-full sm:w-64">
+          <input
+            type="text"
+            placeholder="Search transactions..."
+            className="w-full pl-4 pr-8 py-2 border rounded-md"
+            value={search}
+            onChange={handleSearchChange}
+          />
+          <Button type="button" className="absolute right-0 top-0 h-full px-4">
+            Search
+          </Button>
         </div>
-        <div className="overflow-x-auto">
-          {isMobile ? (
-            <div className="space-y-4">
-              {filteredAndSortedTransactions.map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className="rounded-lg border p-4 shadow-sm"
+      </form>
+      <div className="overflow-x-auto rounded-lg border">
+        <Table>
+          <TableCaption>A list of your recent transactions</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-center text-black font-bold">ID</TableHead>
+              <TableHead className="text-center">
+                <Button
+                  variant="ghost"
+                  onClick={handleSort}
+                  className="p-0 text-black font-bold"
                 >
-                  <div className="flex justify-between">
-                    <span className="font-medium">{transaction.id}</span>
+                  Date
+                  {sortDirection === "asc" ? (
+                    <FaSort className="ml-2 h-4 w-4 rotate-180" />
+                  ) : (
+                    <FaSort className="ml-2 h-4 w-4" />
+                  )}
+                </Button>
+              </TableHead>
+              <TableHead className="text-center text-black font-bold">Name</TableHead>
+              <TableHead className="text-center text-black font-bold">Qty</TableHead>
+              <TableHead className="text-center text-black font-bold">Total Price</TableHead>
+              <TableHead className="text-center text-black font-bold">Status</TableHead>
+              <TableHead className="text-center text-black font-bold">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredAndSortedTransactions.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center">
+                  No transactions found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredAndSortedTransactions.map((transaction) => (
+                <TableRow key={transaction.id}>
+                  <TableCell className="text-center">{transaction.id}</TableCell>
+                  <TableCell className="text-center">
+                    {format(parseISO(transaction.createdAt), "dd MMM yyyy")}
+                  </TableCell>
+                  <TableCell className="text-center">{transaction.event.name}</TableCell>
+                  <TableCell className="text-center">{transaction.qty}</TableCell>
+                  <TableCell className="text-center">
+                    {new Intl.NumberFormat("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    }).format(transaction.totalPrice)}
+                  </TableCell>
+                  <TableCell className="text-center">
                     <span
-                      className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                        getStatusDetails(transaction.status).color
+                      className={`inline-block px-3 py-1 text-sm font-semibold rounded-full ${
+                        transaction.status === "SUCCESS"
+                          ? "bg-green-200 text-green-600"
+                          : transaction.status === "PENDING"
+                          ? "bg-yellow-100 text-yellow-600"
+                          : transaction.status === "FAILED"
+                          ? "bg-red-200 text-red-800"
+                          : transaction.status === "CANCELED"
+                          ? "bg-gray-200 text-gray-600"
+                          : ""
                       }`}
                     >
-                      {getStatusDetails(transaction.status).label}
+                      {transaction.status}
                     </span>
-                  </div>
-                  <div className="mt-2 space-y-1 text-sm">
-                    <p>{transaction.customer}</p>
-                    <p>{transaction.date}</p>
-                    <p>${transaction.amount.toFixed(2)}</p>
-                    <p>{transaction.paymentMethod}</p>
-                  </div>
-                  <div className="mt-3 flex justify-end">
+                  </TableCell>
+                  <TableCell className="text-center">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
                           <span className="sr-only">Open menu</span>
-                          <FaEllipsisH className="h-4 w-4" />
+                          <FaEllipsisV className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            navigator.clipboard.writeText(transaction.id)
-                          }
-                        >
-                          Copy transaction ID
+                        <DropdownMenuItem onClick={() => handleAcceptTransaction(transaction.id)}>
+                          Accept
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        {transaction.status !== "ACCEPTED" && (
+                        <DropdownMenuItem onClick={() => handleRejectTransaction(transaction.id)}>
+                          Reject
+                        </DropdownMenuItem>
+                        {transaction.paymentProof && (
                           <DropdownMenuItem
-                            onClick={() =>
-                              updateTransactionStatus(transaction.id, "ACCEPTED")
-                            }
+                            onClick={() => window.open(transaction.paymentProof, "_blank")}
                           >
-                            Mark as Accepted
+                            View Proof
                           </DropdownMenuItem>
                         )}
-                        {transaction.status !== "REJECTED" && (
-                          <DropdownMenuItem
-                            onClick={() =>
-                              updateTransactionStatus(transaction.id, "REJECTED")
-                            }
-                          >
-                            Mark as Rejected
-                          </DropdownMenuItem>
-                        )}
-                        {transaction.status !== "FAILED" && (
-                          <DropdownMenuItem
-                            onClick={() =>
-                              updateTransactionStatus(transaction.id, "FAILED")
-                            }
-                          >
-                            Mark as Failed
-                          </DropdownMenuItem>
-                        )}
-                        {transaction.status !== "REFUNDED" && (
-                          <DropdownMenuItem
-                            onClick={() =>
-                              updateTransactionStatus(transaction.id, "REFUNDED")
-                            }
-                          >
-                            Mark as Refunded
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>View details</DropdownMenuItem>
-                        <DropdownMenuItem>Edit transaction</DropdownMenuItem>
-                        <DropdownMenuItem>Send receipt</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <Table>
-              <TableCaption>A list of all transactions</TableCaption>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSort("id")}
-                      className="p-0 font-bold"
-                    >
-                      ID
-                      <FaSort className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSort("date")}
-                      className="p-0 font-bold"
-                    >
-                      Date
-                      <FaSort className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSort("customer")}
-                      className="p-0 font-bold"
-                    >
-                      Customer
-                      <FaSort className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSort("amount")}
-                      className="p-0 font-bold"
-                    >
-                      Amount
-                      <FaSort className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSort("status")}
-                      className="p-0 font-bold"
-                    >
-                      Status
-                      <FaSort className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSort("paymentMethod")}
-                      className="p-0 font-bold"
-                    >
-                      Payment Method
-                      <FaSort className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredAndSortedTransactions.map((transaction) => (
-                  <TableRow key={transaction.id}>
-                    <TableCell className="font-medium">
-                      {transaction.id}
-                    </TableCell>
-                    <TableCell>{transaction.date}</TableCell>
-                    <TableCell>{transaction.customer}</TableCell>
-                    <TableCell>${transaction.amount.toFixed(2)}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                          getStatusDetails(transaction.status).color
-                        }`}
-                      >
-                        {getStatusDetails(transaction.status).label}
-                      </span>
-                    </TableCell>
-                    <TableCell>{transaction.paymentMethod}</TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <FaEllipsisH className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem
-                            onClick={() =>
-                              navigator.clipboard.writeText(transaction.id)
-                            }
-                          >
-                            Copy transaction ID
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          {transaction.status !== "ACCEPTED" && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                updateTransactionStatus(
-                                  transaction.id,
-                                  "ACCEPTED"
-                                )
-                              }
-                            >
-                              Mark as Accepted
-                            </DropdownMenuItem>
-                          )}
-                          {transaction.status !== "REJECTED" && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                updateTransactionStatus(
-                                  transaction.id,
-                                  "REJECTED"
-                                )
-                              }
-                            >
-                              Mark as Rejected
-                            </DropdownMenuItem>
-                          )}
-                          {transaction.status !== "FAILED" && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                updateTransactionStatus(
-                                  transaction.id,
-                                  "FAILED"
-                                )
-                              }
-                            >
-                              Mark as Failed
-                            </DropdownMenuItem>
-                          )}
-                          {transaction.status !== "REFUNDED" && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                updateTransactionStatus(
-                                  transaction.id,
-                                  "REFUNDED"
-                                )
-                              }
-                            >
-                              Mark as Refunded
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>View details</DropdownMenuItem>
-                          <DropdownMenuItem>Edit transaction</DropdownMenuItem>
-                          <DropdownMenuItem>Send receipt</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </div>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }
-

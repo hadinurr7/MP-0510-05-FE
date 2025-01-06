@@ -7,8 +7,7 @@ import { useFormik } from "formik";
 import { RegisterSchema } from "./schema";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { LuUserRoundPen } from "react-icons/lu";
-import { MdOutlineEmail } from "react-icons/md";
+import { MdOutlineEmail, MdPermIdentity } from "react-icons/md";
 import { MdLockOutline } from "react-icons/md";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
@@ -49,9 +48,9 @@ export const RegisterPage = () => {
                 <div className="w-full items-center">
                   
                   <div className="mb-4 flex flex-col space-y-1.5">
-                    <Label htmlFor="fullname">Fullname</Label>
+                    <Label htmlFor="fullname">Fullname<span className="text-red-600">*</span></Label>
                     <div className="flex items-center gap-2 rounded-2xl border border-black p-2">
-                      <LuUserRoundPen
+                      <MdPermIdentity
                         className="ml-2 text-gray-500"
                         size={20}
                       />
@@ -63,6 +62,7 @@ export const RegisterPage = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         className="flex-1 "
+                        required
                       />
                     </div>
                     {!!formik.touched.fullname && !!formik.errors.fullname ? (
@@ -73,7 +73,7 @@ export const RegisterPage = () => {
                   </div>
 
                   <div className="mb-4 flex flex-col space-y-1.5">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">Email<span className="text-red-600">*</span> </Label>
                     <div className="flex items-center gap-2 rounded-2xl border border-black p-2">
                       <MdOutlineEmail className="text-gray-500" size={20} />
                       <Input
@@ -84,6 +84,7 @@ export const RegisterPage = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         className="flex-1 border-none p-2"
+                        required
                       />
                     </div>
                     {!!formik.touched.email && !!formik.errors.email ? (
@@ -94,7 +95,7 @@ export const RegisterPage = () => {
                   </div>
 
                   <div className="mb-4 flex flex-col space-y-1.5">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">Password<span className="text-red-600">*</span></Label>
                     <div className="flex items-center gap-2 rounded-2xl border border-black p-2">
                       <MdLockOutline className="text-gray-500" size={20} />
                       <Input
@@ -105,6 +106,7 @@ export const RegisterPage = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         className="flex-1 border-none p-2"
+                        required
                       />
                       <Button
                         type="button"
@@ -126,7 +128,7 @@ export const RegisterPage = () => {
                   </div>
 
                   <div className="mb-4 flex flex-col space-y-1.5">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Label htmlFor="confirmPassword">Confirm Password<span className="text-red-600">*</span></Label>
                     <div className="flex items-center gap-2 rounded-2xl border border-black p-2">
                       <MdLockOutline className="text-gray-500" size={20} />
                       <Input
@@ -137,6 +139,7 @@ export const RegisterPage = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         className="flex-1 border-none p-2 "
+                        required
                       />
                       <Button
                         type="button"
@@ -161,7 +164,7 @@ export const RegisterPage = () => {
                   </div>
 
                   <div className="mb-4 flex flex-col space-y-1.5">
-                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                    <Label htmlFor="phoneNumber">Phone Number<span className="text-red-600">*</span></Label>
                     <div className="flex items-center gap-2 rounded-2xl border border-black p-2">
                       <Input
                         name="phoneNumber"
@@ -171,6 +174,7 @@ export const RegisterPage = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         className="flex-1 border-none p-2 "
+                        required
                       />
                     </div>
                     {!!formik.touched.phoneNumber &&
@@ -218,7 +222,7 @@ export const RegisterPage = () => {
 
               <div className="mt-4 text-center">
                 <p>
-                  Hosting events?
+                  Hosting events? {" "}
                   <Link href="/register/organizer" className="text-blue-500 underline">
                      Register as an Organizer
                   </Link>
@@ -227,7 +231,7 @@ export const RegisterPage = () => {
 
               <div className="mt-4 text-center">
                 <p>
-                  Already have an account?
+                  Already have an account? {" "}
                   <Link href="/login" className="text-blue-500 underline">
                      Log in
                   </Link>

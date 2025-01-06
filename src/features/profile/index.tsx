@@ -16,7 +16,6 @@ import { useFormik } from "formik";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import ProfileLayout from "./ProfileLayout";
 import validationUpdateProfile from "./schema";
 import { FaPencilAlt } from "react-icons/fa";
 import useGetUserProfile from "@/hooks/api/user/useGetUsersProfile";
@@ -84,27 +83,22 @@ export default function ProfilePage() {
 
   if (isPendingGet) {
     return (
-      <ProfileLayout>
         <div className="flex h-full items-center justify-center">
           <LoadingScreen />
         </div>
-      </ProfileLayout>
     );
   }
 
   if (error) {
     return (
-      <ProfileLayout>
         <div className="flex h-full items-center justify-center">
           <ErrorLoading />
         </div>
-      </ProfileLayout>
     );
   }
 
   return (
-    <ProfileLayout>
-      <div className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
+    <div className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
         <Card className="flex flex-1 flex-col">
           <CardHeader className="text-start">
             <CardTitle className="text-2xl">Personal Information</CardTitle>
@@ -267,6 +261,5 @@ export default function ProfilePage() {
           </form>
         </Card>
       </div>
-    </ProfileLayout>
   );
 }
