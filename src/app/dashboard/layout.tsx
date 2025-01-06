@@ -12,7 +12,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <main className="h-screen w-screen mr-4">
+    <main className="relative">
     <SidebarProvider>
       <DashboardSidebar />
         <SidebarTrigger />

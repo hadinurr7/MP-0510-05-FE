@@ -1,8 +1,13 @@
-import RegisterOrganizerPage from '@/features/register/organizer'
-import React from 'react'
+import RegisterOrganizerPage from "@/features/register/organizer";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import React from "react";
 
-const page = () => {
-  return <RegisterOrganizerPage/>
-}
+const RegisterOrganizer = async () => {
+  const session = await auth();
+  if (session) return redirect("/");
 
-export default page
+  return <RegisterOrganizerPage />;
+};
+
+export default RegisterOrganizer;
