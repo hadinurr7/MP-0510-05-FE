@@ -1,68 +1,67 @@
 "use client";
 
+import { axiosInstance } from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import useAxios from "../../useAxios";
+import { useSession } from "next-auth/react";
 
-interface UpdateEventPayload {
-  name?: string;
-  description?: string;
-  categories?: string;
-  city?: string;
-  startDate?: string;
-  endDate?: string;
-  availableSeats?: number;
-  price?: number;
-  thumbnail?: File | null;
+export interface UpdateEventPayload {
+  name: string;
+  description: string;
+  price: number;
+  availableSeats: number;
+  thumbnail: File | null;
+  startDate: string;
+  endDate: string;
+  categoryId: number;
+  cityId: number;
 }
 
-const useUpdateEvent = () => {
-  const router = useRouter();
-  const { axiosInstance } = useAxios();
+const updateEvent = async (
+  eventId: number,
+  payload: UpdateEventPayload,
+  token: string | undefined
+) => {
+  const formData = new FormData();
+
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value !== null) {
+      formData.append(key, value);
+    }
+  });
+
+  const { data } = await axiosInstance.put(`/events/${eventId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return data;
+};
+
+export const useUpdateEvent = () => {
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
 
   return useMutation({
-    mutationFn: async ({
-      id,
+    mutationFn: ({
+      eventId,
       payload,
     }: {
-      id: number;
+      eventId: number;
       payload: UpdateEventPayload;
     }) => {
-      const updateEventForm = new FormData();
+      // Ambil token dari session
+      const token = session?.user.token;
+      if (!token) {
+        throw new Error("Token tidak ditemukan");
+      }
 
-      if (payload.name) updateEventForm.append("name", payload.name);
-      if (payload.description) updateEventForm.append("content", payload.description);
-      if (payload.categories)
-        updateEventForm.append("category", payload.categories);
-      if (payload.city) updateEventForm.append("city", payload.city);
-      if (payload.startDate)
-        updateEventForm.append("starstartDatetTime", payload.startDate);
-      if (payload.endDate) updateEventForm.append("endTime", payload.endDate);
-      if (payload.availableSeats)
-        updateEventForm.append("availableSeats", String(payload.availableSeats));
-      if (payload.price) updateEventForm.append("price", String(payload.price));
-      if (payload.thumbnail)
-        updateEventForm.append("thumbnail", payload.thumbnail);
-
-      const { data } = await axiosInstance.patch(
-        `/events/edit-event/${id}`,
-        updateEventForm,
-      );
-
-      return data;
+      // Panggil fungsi updateEvent dengan token
+      return updateEvent(eventId, payload, token);
     },
-    onSuccess: async (data) => {
-      toast.success("Event updated successfully");
-      await queryClient.invalidateQueries({ queryKey: ["events"] });
-      router.push("/events");
-    },
-    onError: (error: AxiosError<any>) => {
-      toast.error(error.response?.data.message || "Failed to update event.");
+    onSuccess: () => {
+      // Setelah sukses, invalidate cache dari event
+      queryClient.invalidateQueries({ queryKey: ["events"] });
     },
   });
 };
-
-export default useUpdateEvent;

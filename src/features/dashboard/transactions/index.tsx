@@ -131,7 +131,7 @@ export default function TransactionHistory() {
   }
 
   return (
-    <div className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
+    <div className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
       <h1 className="mb-5 text-2xl font-bold">Transaction History</h1>
       <form className="mb-4">
         <div className="relative w-full sm:w-64">
@@ -273,7 +273,7 @@ export default function TransactionHistory() {
                         
                         <DropdownMenuItem
                           onClick={() =>
-                            handleViewPaymentProof(transaction?.payment?.[0]?.paymentProof || "")
+                            handleViewPaymentProof(transaction.payment[0]?.paymentProof || "")
                           }
                         >
                           View Payment Proof

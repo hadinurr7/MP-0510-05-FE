@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label";
 import useUpdateUserProfile from "@/hooks/api/user/useUpdateUserProfile";
 import { useFormik } from "formik";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 import useGetUserProfile from "@/hooks/api/user/useGetUsersProfile";
@@ -98,7 +97,7 @@ export default function ProfilePage() {
   }
 
   return (
-      <div className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
+      <div className="container mx-auto  px-4 py-10 sm:px-6 lg:px-8">
         <Card className="flex flex-1 flex-col border-none shadow-none">
           <CardHeader className="text-start">
             <CardTitle className="text-2xl">Personal Information</CardTitle>

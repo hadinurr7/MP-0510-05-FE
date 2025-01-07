@@ -12,13 +12,10 @@ export default async function Layout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <main className="relative">
     <SidebarProvider>
-      <DashboardSidebar />
+      <DashboardSidebar/>
         <SidebarTrigger />
         {children}
     </SidebarProvider>
-    </main>
-
   )
 }

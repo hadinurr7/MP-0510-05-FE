@@ -1,8 +1,6 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import useAxios from "../../useAxios";
 

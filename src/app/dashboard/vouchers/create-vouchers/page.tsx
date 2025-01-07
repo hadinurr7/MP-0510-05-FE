@@ -1,7 +1,5 @@
 import CreateVoucherPage from "@/features/dashboard/vouchers/create-vouchers";
 
-const CreateVoucherPageWrapper = () => {
+export default function CreateVoucher() {
   return <CreateVoucherPage />;
-};
-
-export default CreateVoucherPageWrapper;
+}

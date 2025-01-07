@@ -41,10 +41,10 @@ export function DashboardSidebar() {
   };
 
   return (
-    <Sidebar>
+    <Sidebar className="container mx-auto bg-white">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="flex justify-center py-10">
+          <SidebarGroupLabel className=" py-10">
             <h1 className="text-2xl font-black">Dashboard</h1>
           </SidebarGroupLabel>
 

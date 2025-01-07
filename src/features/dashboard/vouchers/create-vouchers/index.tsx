@@ -48,7 +48,7 @@ const CreateVoucherPage = () => {
   });
 
   return (
-    <main className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
+    <main className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
       <h1 className="mb-5 text-2xl font-bold">Create Voucher</h1>
       <form className="space-y-4" onSubmit={formik.handleSubmit}>
         <div className="grid w-full grid-cols-2 gap-6">

@@ -1,5 +1,9 @@
-import EventListPage from "@/features/dashboard/events";
+import EventListPage from '@/features/dashboard/events'
+import React from 'react'
 
-export default function CreateEventPage() {
-  return <EventListPage />;
+const EventList = () => {
+  return <EventListPage/>
 }
+
+export default EventList
+

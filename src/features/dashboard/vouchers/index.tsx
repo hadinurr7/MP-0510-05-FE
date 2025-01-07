@@ -20,7 +20,7 @@ const VoucherPage = () => {
   if (error) return <div>Error fetching vouchers: {error.message}</div>;
 
   return (
-    <div className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
+    <div className="container mx-auto  px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-6 flex flex-col items-start justify-between sm:flex-row sm:items-center">
         <h1 className="mb-4 text-2xl font-bold sm:mb-0">Voucher List</h1>
         <Button className="w-full bg-blue-500 font-medium hover:bg-blue-600 sm:w-auto">
@@ -79,7 +79,7 @@ const VoucherPage = () => {
       </div>
 
       <div className="space-y-4 md:hidden">
-=        {data && data.length > 0 ? (
+        {data && data.length > 0 ? (
           data.map((voucher) => (
             <Card key={voucher.id}>
               <CardHeader>

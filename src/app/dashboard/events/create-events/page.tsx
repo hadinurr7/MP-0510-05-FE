@@ -1,4 +1,4 @@
-import CreateEvent from "@/features/dashboard/events/create-event";
+import CreateEvent from "@/features/create-event";
 
 export default function CreateEventPage() {
   return <CreateEvent />;
