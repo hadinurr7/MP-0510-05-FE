@@ -1,26 +1,9 @@
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
+"use client";
+import React from "react";
+import UpdateEventPage from "@/features/dashboard/events/edit-events"
 
-import useGetEvent from "@/hooks/api/event/UseGetEvent";
-import LoadingScreen from "@/app/components/LoadingScreen";
-import EditEventPage from "@/app/edit-events";
+const UpdateEvent = ({ params }: { params: { id: string } }) => {
+  return <UpdateEventPage id={Number(params.id)} />;
+};
 
-const ErrorMessage = ({ message }: { message: string }) => (
-  <p className="text-red-500">{message}</p>
-);
-
-export default function EditEvent() {
-  const { id } = useParams();
-
-  const eventId = Number(id); // Konversi langsung ke angka
-  if (isNaN(eventId)) {
-    return <ErrorMessage message="Invalid event ID" />;
-  }
-
-  const { data: event, isLoading, isError } = useGetEvent(eventId);
-
-  if (isLoading) return <LoadingScreen />;
-  if (isError) return <ErrorMessage message="Error loading event data" />;
-
-  return <EditEventPage eventId={eventId} initialData={event} />;
-}
+export default UpdateEvent;

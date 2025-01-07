@@ -26,11 +26,11 @@ import { editEventSchema } from "./schema";
 import useUpdateEvent from "@/hooks/api/event/useUpdateEvent";
 
 interface EditEventPageProps {
-  eventId: number;
+  id : number
   initialData: any;
 }
 
-const EditEventPage: FC<EditEventPageProps> = ({ eventId, initialData }) => {
+const EditEventPage: FC<EditEventPageProps> = ({ id, initialData }) => {
   const router = useRouter();
   const { data: cities = [] } = useGetCities();
   const { data: categories = [] } = useGetCategories();
@@ -59,7 +59,7 @@ const EditEventPage: FC<EditEventPageProps> = ({ eventId, initialData }) => {
     onSubmit: async (values) => {
       try {
         await updateEvent({
-          eventId,
+          id,
           payload: {
             ...values,
             startDate: formatISO(new Date(values.startDate)),
