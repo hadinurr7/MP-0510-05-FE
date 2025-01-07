@@ -22,6 +22,6 @@ export interface Transactions {
     payment: {
       paymenStatus: string
       paymentMethod: string
-      paymentProof?:string
-    }
+      paymentProof:string
+    }[]
 }

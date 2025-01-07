@@ -9,7 +9,7 @@ import useAxios from "../../useAxios";
 interface UpdateEventPayload {
   name?: string;
   description?: string;
-  category?: string;
+  categories?: string;
   city?: string;
   startDate?: string;
   endDate?: string;
@@ -35,8 +35,8 @@ const useUpdateEvent = () => {
 
       if (payload.name) updateEventForm.append("name", payload.name);
       if (payload.description) updateEventForm.append("content", payload.description);
-      if (payload.category)
-        updateEventForm.append("category", payload.category);
+      if (payload.categories)
+        updateEventForm.append("category", payload.categories);
       if (payload.city) updateEventForm.append("city", payload.city);
       if (payload.startDate)
         updateEventForm.append("starstartDatetTime", payload.startDate);

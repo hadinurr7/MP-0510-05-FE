@@ -39,7 +39,7 @@ export default function TransactionHistory() {
   const [search, setSearch] = useState("");
 
   const { mutateAsync: updateTransactionStatus, isPending } =
-    useUpdateTransactionStatus(token || ""); // Use the custom hook for mutation
+    useUpdateTransactionStatus(token || "");
 
   const filteredAndSortedTransactions = useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
@@ -47,22 +47,19 @@ export default function TransactionHistory() {
     const filtered = data.filter((transaction) => {
       return (
         (transaction.event?.name.toLowerCase() || "").includes(
-          search.toLowerCase(),
+          search.toLowerCase()
         ) ||
         (transaction.user?.fullname.toLowerCase() || "").includes(
-          search.toLowerCase(),
+          search.toLowerCase()
         ) ||
         (transaction.user?.email.toLowerCase() || "").includes(
-          search.toLowerCase(),
+          search.toLowerCase()
         ) ||
         (transaction.status.toLocaleLowerCase() || "").includes(
-          search.toLowerCase(),
+          search.toLowerCase()
         ) ||
-        (
-          transaction.payment?.paymentMethod?.toLocaleLowerCase() || ""
-        ).includes(search.toLowerCase()) ||
-        (transaction.payment?.paymentProof?.toLocaleLowerCase() || "").includes(
-          search.toLowerCase(),
+        (transaction.payment?.[0]?.paymentProof?.toLocaleLowerCase() || "").includes(
+          (search || "").toLowerCase()
         )
       );
     });
@@ -106,6 +103,14 @@ export default function TransactionHistory() {
       toast.success(`Transaction ${transactionId} marked as FAILED!`);
     } catch (error) {
       toast.error("Failed to update transaction status.");
+    }
+  };
+
+  const handleViewPaymentProof = (paymentProofUrl: string) => {
+    if (paymentProofUrl) {
+      window.open(paymentProofUrl, "_blank");
+    } else {
+      toast.error("Payment proof not available.");
     }
   };
 
@@ -230,12 +235,12 @@ export default function TransactionHistory() {
                         transaction.status === "WAITING"
                           ? "bg-gray-200 text-gray-600"
                           : transaction.status === "VERIFYING"
-                            ? "bg-yellow-100 text-yellow-600"
-                            : transaction.status === "SUCCESS"
-                              ? "bg-green-200 text-green-600"
-                              : transaction.status === "FAILED"
-                                ? "bg-red-200 text-red-800"
-                                : ""
+                          ? "bg-yellow-100 text-yellow-600"
+                          : transaction.status === "SUCCESS"
+                          ? "bg-green-200 text-green-600"
+                          : transaction.status === "FAILED"
+                          ? "bg-red-200 text-red-800"
+                          : ""
                       }`}
                     >
                       {transaction.status}
@@ -255,7 +260,7 @@ export default function TransactionHistory() {
                           }
                           disabled={isPending}
                         >
-                          {isPending ? "Loading..." : "Accept"}
+                          Accept
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() =>
@@ -263,7 +268,15 @@ export default function TransactionHistory() {
                           }
                           disabled={isPending}
                         >
-                          {isPending ? "Loading..." : "Reject"}
+                          Reject
+                        </DropdownMenuItem>
+                        
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleViewPaymentProof(transaction?.payment?.[0]?.paymentProof || "")
+                          }
+                        >
+                          View Payment Proof
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
