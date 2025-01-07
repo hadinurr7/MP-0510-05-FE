@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -27,7 +27,7 @@ import {
 import { useSession } from "next-auth/react";
 import useGetEventsByUser from "@/hooks/api/event/useGetEventByUser";
 import useGetAttendeesByEvent from "@/hooks/api/attendee/useGetAttendee";
-
+import { toast } from "react-toastify";
 
 const AttendancePage = () => {
   const { data: session } = useSession();
@@ -45,20 +45,33 @@ const AttendancePage = () => {
     data: attendees,
     isLoading: isLoadingAttendees,
     error: errorAttendees,
-  } = useGetAttendeesByEvent(selectedEventId || 0, token ||"" );
+  } = useGetAttendeesByEvent(selectedEventId ?? 0, token ||"");
 
   const handleEventChange = (value: string) => {
-    setSelectedEventId(Number(value));
+    const eventId = Number(value);
+    if (eventId && events?.data.some((event) => event.id === eventId)) {
+      setSelectedEventId(eventId);
+    } else {
+      toast.error("Invalid event selected or event not found");
+      setSelectedEventId(null); // Reset selected event
+    }
   };
 
   const totalTicketsSold =
-    attendees?.reduce((acc, attendee) => acc + attendee.ticketCount, 0) || 0;
+    attendees?.reduce((acc, attendee) => acc + attendee.qty, 0) || 0;
   const totalRevenue =
     attendees?.reduce((acc, attendee) => acc + attendee.totalPrice, 0) || 0;
 
+  const selectedEvent = events?.data.find(
+    (event) => event.id === selectedEventId
+  );
+
+  if (selectedEventId && !selectedEvent) {
+    toast.error("Event not found");
+  }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto w-screen h-screen">
       <h1 className="mb-5 text-3xl font-bold">Event Attendees</h1>
       <Card>
         <CardHeader>
@@ -74,44 +87,52 @@ const AttendancePage = () => {
               <SelectContent>
                 {isLoadingEvents ? (
                   <SelectItem value="loading" disabled>
-                    Loading...
+                    Loading events...
                   </SelectItem>
                 ) : errorEvents ? (
                   <SelectItem value="error" disabled>
                     Error loading events
                   </SelectItem>
-                ) : (
+                ) : events?.data.length ? (
                   events?.data.map((event) => (
                     <SelectItem key={event.id} value={event.id.toString()}>
                       {event.name}
                     </SelectItem>
                   ))
+                ) : (
+                  <SelectItem value="no-events" disabled>
+                    No events available
+                  </SelectItem>
                 )}
               </SelectContent>
             </Select>
           </div>
-          {isLoadingAttendees ? (
+
+          {selectedEventId === null ? (
+            <p>Please select an event to view attendees.</p>
+          ) : isLoadingAttendees ? (
             <p>Loading attendees...</p>
           ) : errorAttendees ? (
             <p>Error loading attendees: {errorAttendees.message}</p>
           ) : attendees && attendees.length > 0 ? (
             <Table>
               <TableCaption>
-                List of attendees for{" "}
-                {events?.data.find((event) => event.id === selectedEventId)?.name}
+                List of attendees for {selectedEvent?.name || "Selected Event"}
               </TableCaption>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Attendee Name</TableHead>
-                  <TableHead>Ticket Quantity</TableHead>
+                  <TableHead>Customer Name</TableHead>
+                  <TableHead>Customer Email</TableHead>
+                  <TableHead>Tickets Purchased</TableHead>
                   <TableHead>Total Price Paid</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {attendees.map((attendee) => (
-                  <TableRow key={attendee.id}>
+                  <TableRow key={attendee.email}>
                     <TableCell>{attendee.name}</TableCell>
-                    <TableCell>{attendee.ticketCount}</TableCell>
+                    <TableCell>{attendee.email}</TableCell>
+                    <TableCell>{attendee.qty}</TableCell>
                     <TableCell>
                       {attendee.totalPrice.toLocaleString("id-ID", {
                         style: "currency",
@@ -125,10 +146,11 @@ const AttendancePage = () => {
           ) : (
             <p>No attendees available for this event.</p>
           )}
-          {selectedEventId && (
+
+          {selectedEventId && attendees && (
             <div className="mt-4">
               <p className="font-semibold">Event Summary:</p>
-              <p>Total Attendees: {attendees?.length || 0}</p>
+              <p>Total Attendees: {attendees.length}</p>
               <p>Total Tickets Sold: {totalTicketsSold}</p>
               <p>
                 Total Revenue:{" "}

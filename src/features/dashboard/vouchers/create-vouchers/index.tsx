@@ -19,11 +19,14 @@ import useGetEventsByUser from "@/hooks/api/event/useGetEventByUser";
 import { useSession } from "next-auth/react";
 import InputField from "@/components/ui/InputField";
 import { DateInput } from "../../components/DateInput";
+import Link from "next/link";
 
 const CreateVoucherPage = () => {
   const { data: session } = useSession();
   const token = session?.user.token;
-  const { mutateAsync: createVoucher, isPending } = useCreateVoucher(token || "");
+  const { mutateAsync: createVoucher, isPending } = useCreateVoucher(
+    token || "",
+  );
   const { data: events } = useGetEventsByUser(token || "");
 
   const formik = useFormik({
@@ -152,7 +155,7 @@ const CreateVoucherPage = () => {
             ) : null}
           </div>
 
-          <div>
+          <Link href="/dashboard/vouchers/create-vouchers">
             <Button
               type="submit"
               disabled={isPending}
@@ -167,7 +170,7 @@ const CreateVoucherPage = () => {
                 "Create Voucher"
               )}
             </Button>
-          </div>
+          </Link>
         </div>
       </form>
     </main>
