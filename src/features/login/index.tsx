@@ -30,7 +30,7 @@ export const LoginPage = () => {
   });
 
   return (
-    <main className="container mx-auto flex justify-center pt-20">
+    <main className="container mx-auto h-screen w-screen flex justify-center pt-20">
       <div className="h-full w-full">
         <div className="flex h-full w-full justify-center">
           <Card className="w-[500px] items-center border-none shadow-none">
