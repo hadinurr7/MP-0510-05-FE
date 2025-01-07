@@ -1,6 +1,8 @@
 import * as Yup from "yup";
 
+
 export const editEventSchema = Yup.object().shape({
+
   name: Yup.string().required("Event name is required"),
   description: Yup.string().required("Description is required"),
   price: Yup.number()
