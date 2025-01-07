@@ -3,7 +3,7 @@
 //     voucherCode: string;
 //     qty: number;
 //     value: number;
-//     validUntil: Date;
+//     : Date;
 //     event: {
 //       id: number;
 //       name: string;
