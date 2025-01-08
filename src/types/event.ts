@@ -25,7 +25,7 @@ export interface Attendee {
   email: string;
   qty: number;
   totalPrice: number;
-}
+
 
 export interface EventResponse {
   data: {

@@ -1,23 +1,17 @@
+// components/Searchbar.tsx
 "use client";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { useQueryState, parseAsString } from "nuqs";
-import { useDebounce } from "use-debounce";
 
-const Searchbar = () => {
-  const [query, setQuery] = useState("");
+interface SearchbarProps {
+  onSearch: (query: string) => void;
+  value: string;
+}
 
-  const [debouncedSearch] = useDebounce(query, 500);
-
-  const onSearch = (query: string) => {
-    setQuery(query);
-  };
-
+const Searchbar = ({ onSearch, value }: SearchbarProps) => {
   return (
     <div className="relative -my-7 mx-auto w-full max-w-lg">
       <input
         type="text"
-        value={query}
+        value={value}
         onChange={(e) => onSearch(e.target.value)}
         placeholder="Search events..."
         className="w-full rounded-full border-2 border-gray-300 bg-[#F6F6F6] py-3 pl-4 pr-12 text-lg shadow-sm transition duration-300 ease-in-out focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"

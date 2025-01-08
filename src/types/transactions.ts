@@ -8,7 +8,7 @@ export interface Transactions {
     qty : number
     totalPrice:number
     status: string
-    createdAt: string
+   createdAt: string
     updatedAt: string
     user: {
         fullname: string;
@@ -25,3 +25,12 @@ export interface Transactions {
       paymentProof:string
     }[]
 }
+
+export enum TransactionStatus {
+    WAITING = "WAITING",
+    VERIFYING = "VERIFYING",
+    SUCCESS = "SUCCESS",
+    FAILED = "FAILED"
+  }
+
+
