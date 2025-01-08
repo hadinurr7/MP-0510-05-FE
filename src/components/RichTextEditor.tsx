@@ -8,7 +8,7 @@ import { Label } from "./ui/label";
 interface RichTextEditorProps {
   label: string;
   value: string;
-  isTouch: boolean | undefined;
+  isTouch?: boolean | undefined;
   onChange: (value: string) => void;
   setError: (field: string, value: string | undefined) => void;
   setTouch: (field: string, value: boolean | undefined) => void;

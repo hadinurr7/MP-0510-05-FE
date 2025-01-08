@@ -7,6 +7,7 @@ import HeroSection from "./components/HeroSection";
 import Searchbar from "@/components/SearchBarDummy";
 import { useState } from "react";
 
+
 const NavbarWithSearchBar = dynamic(
   () => import("@/components/NavbarWithSearchBar"),
   {
@@ -35,6 +36,8 @@ const HomePage = () => {
       />
       <ConcertGrid searchQuery={searchQuery} />
       
+
+
     </>
   );
 };

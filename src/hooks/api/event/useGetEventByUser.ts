@@ -1,14 +1,10 @@
 "use client";
 import useAxios from "@/hooks/useAxios";
-import { Event, EventResponse } from "@/types/event";
+import { EventResponse } from "@/types/event";
 import { useQuery } from "@tanstack/react-query";
 
-interface GetEventsQueries {
-  token: string | undefined;
-}
 
-
-const useGetEventsByUser = ({token}:GetEventsQueries) => {
+const useGetEventsByUser = (token : string) => {
   const { axiosInstance } = useAxios();
 
   return useQuery({

@@ -1,14 +1,16 @@
-import EditEventPage from "@/features/dashboard/events/edit-events";
-import React from "react";
 
-interface EventPageProps {
+"use client";
+import React from "react";
+import UpdateEventPage from "@/features/dashboard/events/edit-events"
+
+interface EditEventPageProps {
   params: {
-    id: string;
+    eventId: string;
   };
 }
 
-const EditEvent = ({ params }: EventPageProps) => {
-  return <EditEventPage eventId={parseInt(params.id)} />;
+const UpdateEvent = ({ params }: { params: { eventId: string } }) => {
+  return <UpdateEventPage eventId={Number(params.eventId)} />;
 };
 
-export default EditEvent;
+export default UpdateEvent;

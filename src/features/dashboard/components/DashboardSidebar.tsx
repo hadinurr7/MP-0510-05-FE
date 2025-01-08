@@ -27,6 +27,8 @@ const items = [
   { title: "Log Out", icon: FaSignOutAlt, onClick: () => signOut({ callbackUrl: "/login" }) },
 ];
 
+
+
 export function DashboardSidebar() {
   const [openMenus, setOpenMenus] = useState<string[]>([]);
 

@@ -19,40 +19,34 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FaSort, FaEllipsisV } from "react-icons/fa";
 import { useSession } from "next-auth/react";
+
 import LoadingScreen from "@/app/components/LoadingScreen";
 import ErrorLoading from "@/app/components/ErrorLoading";
 import { format, parseISO } from "date-fns";
-import useGetTransactions from "@/hooks/api/transactions/useGetTransactions";
-
-interface Transaction {
-  id: string;
-  qty: number;
-  totalPrice: number;
-  status: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-  event: {
-    name: string;
-  };
-}
+import useGetTransactions from "@/hooks/api/transaction/useGetTransactions";
 
 export default function UserTransactionHistory() {
   const { data: session } = useSession();
   const token = session?.user?.token;
 
-  const { data, isPending: isPendingGet, error } = useGetTransactions({ token });
+  const {
+    data,
+    isPending: isPendingGet,
+    error,
+  } = useGetTransactions({ token });
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [search, setSearch] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const filteredAndSortedTransactions = useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
 
     const filtered = data.filter((transaction) => {
-      return transaction.event?.name.toLowerCase().includes(search.toLowerCase());
+      return transaction.event?.name
+        .toLowerCase()
+        .includes(search.toLowerCase());
     });
 
-    // Sort transactions based on createdAt
     return filtered.sort((a, b) => {
       const aDate = parseISO(a.createdAt);
       const bDate = parseISO(b.createdAt);
@@ -69,6 +63,32 @@ export default function UserTransactionHistory() {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
+  };
+
+  const handleUploadPaymentProof = (transactionId: number, file: File) => {
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("paymentProof", file);
+    formData.append("transactionId", transactionId.toString());
+
+    // Kirim file ke API untuk diproses
+    fetch("/api/upload-payment-proof", {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUploading(false);
+        alert("Payment proof uploaded successfully!");
+        // Update UI atau lakukan refresh untuk menampilkan bukti pembayaran
+      })
+      .catch((error) => {
+        setUploading(false);
+        alert("Error uploading payment proof.");
+      });
   };
 
   if (isPendingGet) {
@@ -88,14 +108,14 @@ export default function UserTransactionHistory() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
+    <div className="container mx-auto h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
       <h1 className="mb-5 text-2xl font-bold">Transaction History</h1>
       <form className="mb-4">
         <div className="relative w-full sm:w-64">
           <input
             type="text"
             placeholder="Search transactions..."
-            className="w-full pl-4 pr-8 py-2 border rounded-md"
+            className="w-full rounded-md border py-2 pl-4 pr-8"
             value={search}
             onChange={handleSearchChange}
           />
@@ -109,12 +129,14 @@ export default function UserTransactionHistory() {
           <TableCaption>A list of your recent transactions</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center text-black font-bold">ID</TableHead>
+              <TableHead className="text-center font-bold text-black">
+                ID
+              </TableHead>
               <TableHead className="text-center">
                 <Button
                   variant="ghost"
                   onClick={handleSort}
-                  className="p-0 text-black font-bold"
+                  className="p-0 font-bold text-black"
                 >
                   Date
                   {sortDirection === "asc" ? (
@@ -124,29 +146,49 @@ export default function UserTransactionHistory() {
                   )}
                 </Button>
               </TableHead>
-              <TableHead className="text-center text-black font-bold">Name</TableHead>
-              <TableHead className="text-center text-black font-bold">Qty</TableHead>
-              <TableHead className="text-center text-black font-bold">Total Price</TableHead>
-              <TableHead className="text-center text-black font-bold">Status</TableHead>
-              <TableHead className="text-center text-black font-bold">Actions</TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Name
+              </TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Qty
+              </TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Total Price
+              </TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Status
+              </TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Actions
+              </TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Upload Payment Proof
+              </TableHead>{" "}
+              {/* New column */}
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredAndSortedTransactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center">
+                <TableCell colSpan={8} className="text-center">
                   No transactions found.
                 </TableCell>
               </TableRow>
             ) : (
               filteredAndSortedTransactions.map((transaction) => (
                 <TableRow key={transaction.id}>
-                  <TableCell className="text-center">{transaction.id}</TableCell>
+                  <TableCell className="text-center">
+                    {transaction.id}
+                  </TableCell>
                   <TableCell className="text-center">
                     {format(parseISO(transaction.createdAt), "dd MMM yyyy")}
                   </TableCell>
-                  <TableCell className="text-center">{transaction.event.name}</TableCell>
-                  <TableCell className="text-center">{transaction.qty}</TableCell>
+                  <TableCell className="text-center">
+                    {transaction.event.name}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {transaction.qty}
+                  </TableCell>
                   <TableCell className="text-center">
                     {new Intl.NumberFormat("id-ID", {
                       style: "currency",
@@ -155,16 +197,16 @@ export default function UserTransactionHistory() {
                   </TableCell>
                   <TableCell className="text-center">
                     <span
-                      className={`inline-block px-3 py-1 text-sm font-semibold rounded-full ${
+                      className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${
                         transaction.status === "SUCCESS"
                           ? "bg-green-200 text-green-600"
                           : transaction.status === "PENDING"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : transaction.status === "FAILED"
-                          ? "bg-red-200 text-red-800"
-                          : transaction.status === "CANCELED"
-                          ? "bg-gray-200 text-gray-600"
-                          : ""
+                            ? "bg-yellow-100 text-yellow-600"
+                            : transaction.status === "FAILED"
+                              ? "bg-red-200 text-red-800"
+                              : transaction.status === "CANCELED"
+                                ? "bg-gray-200 text-gray-600"
+                                : ""
                       }`}
                     >
                       {transaction.status}
@@ -179,19 +221,50 @@ export default function UserTransactionHistory() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => alert(`Viewing details for transaction ${transaction.id}`)}>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            alert(
+                              `Viewing details for transaction ${transaction.id}`,
+                            )
+                          }
+                        >
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => alert(`Downloading receipt for transaction ${transaction.id}`)}>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            alert(
+                              `Downloading receipt for transaction ${transaction.id}`,
+                            )
+                          }
+                        >
                           Download Receipt
                         </DropdownMenuItem>
                         {transaction.status === "ACCEPTED" && (
-                          <DropdownMenuItem onClick={() => alert(`Requesting refund for transaction ${transaction.id}`)}>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              alert(
+                                `Requesting refund for transaction ${transaction.id}`,
+                              )
+                            }
+                          >
                             Request Refund
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <input
+                      type="file"
+                      onChange={(e) =>
+                        handleUploadPaymentProof(
+                          transaction.id,
+                          e.target.files?.[0]!,
+                        )
+                      }
+                      className="border p-2"
+                    />
+                    {uploading && <span>Uploading...</span>}
                   </TableCell>
                 </TableRow>
               ))

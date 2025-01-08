@@ -4,10 +4,14 @@
 import React, { useState, Suspense } from "react";
 import ConcertCard from "./ConcertCard";
 import Searchbar from "@/components/SearchBarDummy";
+
+
 import { useDebounce } from "use-debounce";
 import { Event } from "@/types/event";
 import Link from "next/link";
 import EventGridSkeleton from "@/features/events/components/Skeleton";
+
+
 import useGetCategories from "@/hooks/api/event/useGetCategories";
 import useGetCities from "@/hooks/api/event/useGetCities";
 import useGetEvents from "@/hooks/api/event/useGetEvents";
@@ -17,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 interface ConcertGridProps {
   searchQuery: string;
 }
+
 
 const ConcertGrid = ({ searchQuery }: ConcertGridProps) => {
   const [page, setPage] = useState<number>(1);

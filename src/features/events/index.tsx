@@ -14,6 +14,7 @@ import useGetCategories from "@/hooks/api/event/useGetCategories";
 import useGetCities from "@/hooks/api/event/useGetCities";
 import TransactionModal from "./components/CreateTransactionModal";
 
+
 interface EventDetailProps {
   eventId: number;
 }

@@ -1,66 +1,58 @@
-"use client";
-
+// hooks/api/event/useUpdateEvent.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import useAxios from "../../useAxios";
+import axios from "axios";
 
-interface UpdateEventPayload {
-  name?: string;
-  description?: string;
-  category?: string;
-  city?: string;
-  startDate?: string;
-  endDate?: string;
-  availableSeats?: number;
-  price?: number;
-  thumbnail?: File | null;
+export interface UpdateEventPayload {
+  name: string;
+  description: string;
+  price: number;
+  availableSeats: number;
+  thumbnail: File | null;
+  startDate: string;
+  endDate: string;
+  categoryId: number;
+  cityId: number;
+}
+
+interface UpdateEventParams extends UpdateEventPayload {
+  eventId: number;
+
 }
 
 const useUpdateEvent = () => {
-  const router = useRouter();
-  const { axiosInstance } = useAxios();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      payload,
-    }: {
-      id: number;
-      payload: UpdateEventPayload;
-    }) => {
-      const updateEventForm = new FormData();
+    mutationFn: async ({ eventId, ...payload }: UpdateEventParams) => {
+      const formData = new FormData();
+      
+      // Append all text fields
+      formData.append("name", payload.name);
+      formData.append("description", payload.description);
+      formData.append("price", payload.price.toString());
+      formData.append("availableSeats", payload.availableSeats.toString());
+      formData.append("startDate", payload.startDate);
+      formData.append("endDate", payload.endDate);
+      formData.append("categoryId", payload.categoryId.toString());
+      formData.append("cityId", payload.cityId.toString());
 
-      if (payload.name) updateEventForm.append("name", payload.name);
-      if (payload.description) updateEventForm.append("content", payload.description);
-      if (payload.category)
-        updateEventForm.append("category", payload.category);
-      if (payload.city) updateEventForm.append("city", payload.city);
-      if (payload.startDate)
-        updateEventForm.append("starstartDatetTime", payload.startDate);
-      if (payload.endDate) updateEventForm.append("endTime", payload.endDate);
-      if (payload.availableSeats)
-        updateEventForm.append("availableSeats", String(payload.availableSeats));
-      if (payload.price) updateEventForm.append("price", String(payload.price));
-      if (payload.thumbnail)
-        updateEventForm.append("thumbnail", payload.thumbnail);
+      // Append thumbnail if exists
+      if (payload.thumbnail) {
+        formData.append("thumbnail", payload.thumbnail);
+      }
 
-      const { data } = await axiosInstance.patch(
-        `/events/edit-event/${id}`,
-        updateEventForm,
-      );
+      const response = await axios.put(`/api/events/${eventId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      return data;
+      return response.data;
     },
-    onSuccess: async (data) => {
-      toast.success("Event updated successfully");
-      await queryClient.invalidateQueries({ queryKey: ["events"] });
-      router.push("/events");
-    },
-    onError: (error: AxiosError<any>) => {
-      toast.error(error.response?.data.message || "Failed to update event.");
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["event"] });
     },
   });
 };

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
@@ -19,39 +19,51 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FaSort, FaEllipsisV } from "react-icons/fa";
 import { useSession } from "next-auth/react";
+
+
 import LoadingScreen from "@/app/components/LoadingScreen";
 import ErrorLoading from "@/app/components/ErrorLoading";
 import { format, parseISO } from "date-fns";
-import axios from "axios";
-import useGetTransactions from "@/hooks/api/transactions/useGetTransactions";
+import { toast } from "react-toastify";
+import useGetTransactionsByUser from "@/hooks/api/transaction/useGetTransactionsByUser";
+import useUpdateTransactionStatus from "@/hooks/api/transaction/useUpdateTransactionsStatus";
 
-interface Transaction {
-  id: string;
-  qty: number;
-  totalPrice: number;
-  status: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-  event: {
-    name: string;
-  };
-  paymentProof?: string;
-}
-
-export default function UserTransactionHistory() {
+export default function TransactionHistory() {
   const { data: session } = useSession();
   const token = session?.user?.token;
 
-  const { data, isPending: isPendingGet, error } = useGetTransactions({ token });
+  const {
+    data,
+    isPending: isPendingGet,
+    error,
+  } = useGetTransactionsByUser({ token });
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [search, setSearch] = useState("");
+
+  const { mutateAsync: updateTransactionStatus, isPending } =
+    useUpdateTransactionStatus(token || "");
 
   const filteredAndSortedTransactions = useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
 
     const filtered = data.filter((transaction) => {
-      return transaction.event?.name.toLowerCase().includes(search.toLowerCase());
+      return (
+        (transaction.event?.name.toLowerCase() || "").includes(
+          search.toLowerCase()
+        ) ||
+        (transaction.user?.fullname.toLowerCase() || "").includes(
+          search.toLowerCase()
+        ) ||
+        (transaction.user?.email.toLowerCase() || "").includes(
+          search.toLowerCase()
+        ) ||
+        (transaction.status.toLocaleLowerCase() || "").includes(
+          search.toLowerCase()
+        ) ||
+        (transaction.payment?.[0]?.paymentProof?.toLocaleLowerCase() || "").includes(
+          (search || "").toLowerCase()
+        )
+      );
     });
 
     return filtered.sort((a, b) => {
@@ -72,31 +84,36 @@ export default function UserTransactionHistory() {
     setSearch(event.target.value);
   };
 
-  const updateTransactionStatus = async (transactionId: string, status: string) => {
+  const handleAcceptTransaction = async (transactionId: string) => {
     try {
-      const response = await axios.patch(
-        `/api/transactions/${transactionId}`,
-        { status },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.status === 200) {
-        console.log("Transaction status updated successfully!");
-      }
+      await updateTransactionStatus({
+        transactionId: Number(transactionId),
+        status: "SUCCESS",
+      });
+      toast.success(`Transaction ${transactionId} marked as SUCCESS!`);
     } catch (error) {
-      console.error("Failed to update transaction status", error);
+      toast.error("Failed to update transaction status.");
     }
   };
 
-  const handleAcceptTransaction = (transactionId: string) => {
-    updateTransactionStatus(transactionId, "SUCCESS");
+  const handleRejectTransaction = async (transactionId: string) => {
+    try {
+      await updateTransactionStatus({
+        transactionId: Number(transactionId),
+        status: "FAILED",
+      });
+      toast.success(`Transaction ${transactionId} marked as FAILED!`);
+    } catch (error) {
+      toast.error("Failed to update transaction status.");
+    }
   };
 
-  const handleRejectTransaction = (transactionId: string) => {
-    updateTransactionStatus(transactionId, "CANCELED");
+  const handleViewPaymentProof = (paymentProofUrl: string) => {
+    if (paymentProofUrl) {
+      window.open(paymentProofUrl, "_blank");
+    } else {
+      toast.error("Payment proof not available.");
+    }
   };
 
   if (isPendingGet) {
@@ -123,11 +140,14 @@ export default function UserTransactionHistory() {
           <input
             type="text"
             placeholder="Search transactions..."
-            className="w-full pl-4 pr-8 py-2 border rounded-md"
+            className="w-full rounded-md border py-2 pl-4 pr-8"
             value={search}
             onChange={handleSearchChange}
           />
-          <Button type="button" className="absolute right-0 top-0 h-full px-4">
+          <Button
+            type="button"
+            className="bg-blue-500 font-medium hover:bg-blue-600"
+          >
             Search
           </Button>
         </div>
@@ -137,12 +157,14 @@ export default function UserTransactionHistory() {
           <TableCaption>A list of your recent transactions</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center text-black font-bold">ID</TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Transaction ID
+              </TableHead>
               <TableHead className="text-center">
                 <Button
                   variant="ghost"
                   onClick={handleSort}
-                  className="p-0 text-black font-bold"
+                  className="p-0 font-bold text-black"
                 >
                   Date
                   {sortDirection === "asc" ? (
@@ -152,29 +174,57 @@ export default function UserTransactionHistory() {
                   )}
                 </Button>
               </TableHead>
-              <TableHead className="text-center text-black font-bold">Name</TableHead>
-              <TableHead className="text-center text-black font-bold">Qty</TableHead>
-              <TableHead className="text-center text-black font-bold">Total Price</TableHead>
-              <TableHead className="text-center text-black font-bold">Status</TableHead>
-              <TableHead className="text-center text-black font-bold">Actions</TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Customer Name
+              </TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Customer Email
+              </TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Event Name
+              </TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Quantity
+              </TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Total Price
+              </TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Status
+              </TableHead>
+              <TableHead className="text-center font-bold text-black">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredAndSortedTransactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center">
+                <TableCell colSpan={8} className="text-center">
                   No transactions found.
                 </TableCell>
               </TableRow>
             ) : (
               filteredAndSortedTransactions.map((transaction) => (
                 <TableRow key={transaction.id}>
-                  <TableCell className="text-center">{transaction.id}</TableCell>
+                  <TableCell className="text-center">
+                    {transaction.id}
+                  </TableCell>
                   <TableCell className="text-center">
                     {format(parseISO(transaction.createdAt), "dd MMM yyyy")}
                   </TableCell>
-                  <TableCell className="text-center">{transaction.event.name}</TableCell>
-                  <TableCell className="text-center">{transaction.qty}</TableCell>
+                  <TableCell className="text-center">
+                    {transaction.user?.fullname}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {transaction.user?.email}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {transaction.event?.name}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {transaction.qty}
+                  </TableCell>
                   <TableCell className="text-center">
                     {new Intl.NumberFormat("id-ID", {
                       style: "currency",
@@ -183,15 +233,15 @@ export default function UserTransactionHistory() {
                   </TableCell>
                   <TableCell className="text-center">
                     <span
-                      className={`inline-block px-3 py-1 text-sm font-semibold rounded-full ${
-                        transaction.status === "SUCCESS"
-                          ? "bg-green-200 text-green-600"
-                          : transaction.status === "PENDING"
+                      className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${
+                        transaction.status === "WAITING"
+                          ? "bg-gray-200 text-gray-600"
+                          : transaction.status === "VERIFYING"
                           ? "bg-yellow-100 text-yellow-600"
+                          : transaction.status === "SUCCESS"
+                          ? "bg-green-200 text-green-600"
                           : transaction.status === "FAILED"
                           ? "bg-red-200 text-red-800"
-                          : transaction.status === "CANCELED"
-                          ? "bg-gray-200 text-gray-600"
                           : ""
                       }`}
                     >
@@ -201,25 +251,35 @@ export default function UserTransactionHistory() {
                   <TableCell className="text-center">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
+                        <Button variant="ghost" disabled={isPending}>
                           <FaEllipsisV className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleAcceptTransaction(transaction.id)}>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleAcceptTransaction(transaction.id.toString())
+                          }
+                          disabled={isPending}
+                        >
                           Accept
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleRejectTransaction(transaction.id)}>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleRejectTransaction(transaction.id.toString())
+                          }
+                          disabled={isPending}
+                        >
                           Reject
                         </DropdownMenuItem>
-                        {transaction.paymentProof && (
-                          <DropdownMenuItem
-                            onClick={() => window.open(transaction.paymentProof, "_blank")}
-                          >
-                            View Proof
-                          </DropdownMenuItem>
-                        )}
+                        
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleViewPaymentProof(transaction?.payment?.[0]?.paymentProof || "")
+                          }
+                        >
+                          View Payment Proof
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

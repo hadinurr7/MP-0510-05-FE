@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Clock, Upload, CheckCircle, XCircle } from 'lucide-react';
 import axios from "axios";
-import useCreateTransactionAttachment from "@/hooks/api/transactions/useCreateTransactionAttachment";
 import { TransactionStatus } from "@/types/transactions";
+import useCreateTransactionAttachment from "@/hooks/api/transaction/useCreateTransactionAttachment";
 
 interface Transaction {
   id: number;
