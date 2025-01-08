@@ -17,7 +17,7 @@ const useCreateTransactionAttachment = () => {
       formData.append("file", payload.file);
 
       const { data } = await axiosInstance.post(
-        `/transactions/${payload.transactionId}/attachment`,
+        `/transactions/${payload.transactionId}`,
         formData,
         {
           headers: {

@@ -1,4 +1,4 @@
-import TransactionDetails from "./TransactionDetail";
+import TransactionDetails from "@/features/transaction/TransactionDetail";
 
 export default function TransactionPage({ params }: { params: { id: string } }) {
   return (

@@ -46,7 +46,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
   useEffect(() => {
     const fetchTransaction = async () => {
       try {
-        const response = await axios.get(`/api/transactions/${id}`);
+        const response = await axios.get(`/transactions/${id}`);
         setTransaction(response.data);
       } catch (error) {
         toast({
@@ -107,13 +107,13 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
     formData.append("proof", file);
 
     try {
-      await axios.post(`/api/transactions/${id}/upload-proof`, formData);
+      await axios.post(`/transactions/${id}/upload-proof`, formData);
       toast({
         title: "Success",
         description: "Payment proof uploaded successfully",
       });
       // Refresh transaction data
-      const response = await axios.get(`/api/transactions/${id}`);
+      const response = await axios.get(`/transactions/${id}`);
       setTransaction(response.data);
     } catch (error) {
       toast({

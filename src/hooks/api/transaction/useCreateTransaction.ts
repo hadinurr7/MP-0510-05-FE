@@ -20,7 +20,7 @@ interface Transaction {
 export function useCreateTransaction() {
   return useMutation({
     mutationFn: async (payload: CreateTransactionPayload) => {
-      const { data } = await axios.post<Transaction>('/api/transactions', payload);
+      const { data } = await axios.post<Transaction>('/transactions', payload);
       return data;
     },
     onSuccess: (data) => {
