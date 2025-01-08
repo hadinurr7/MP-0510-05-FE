@@ -39,7 +39,7 @@ export function ChangePasswordForm() {
   });
 
   return (
-    <div className="h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
+    <div className="container mx-auto h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
         <form onSubmit={formik.handleSubmit}>
           <div className="relative mb-6">
             <Label htmlFor="password">Current Password<span className="text-red-600">*</span></Label>

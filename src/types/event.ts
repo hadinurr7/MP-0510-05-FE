@@ -1,6 +1,7 @@
 import { User } from "./user";
 
 export interface Event {
+  city: string;
   voucher: any;
   id: number;
   name: string;
@@ -19,9 +20,16 @@ export interface Event {
   categories: string;
 }
 
+export interface Attendee {
+  name: string;
+  email: string;
+  qty: number;
+  totalPrice: number;
+
+
 export interface EventResponse {
   data: {
-    id: number
+    id: number;
     name: string;
     thumbnail: string;
     description: string;
@@ -35,6 +43,7 @@ export interface EventResponse {
     userId: number;
     cityId: number;
     categoryId: number;
+    attendees?: Attendee[];
   }[];
 
   meta: {

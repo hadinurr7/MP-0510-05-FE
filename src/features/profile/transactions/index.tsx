@@ -24,19 +24,6 @@ import LoadingScreen from "@/app/components/LoadingScreen";
 import ErrorLoading from "@/app/components/ErrorLoading";
 import { format, parseISO } from "date-fns";
 
-interface Transaction {
-  id: string;
-  qty: number;
-  totalPrice: number;
-  status: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-  event: {
-    name: string;
-  };
-}
-
 export default function UserTransactionHistory() {
   const { data: session } = useSession();
   const token = session?.user?.token;
@@ -44,6 +31,7 @@ export default function UserTransactionHistory() {
   const { data, isPending: isPendingGet, error } = useGetTransactions({ token });
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [search, setSearch] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const filteredAndSortedTransactions = useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
@@ -52,7 +40,6 @@ export default function UserTransactionHistory() {
       return transaction.event?.name.toLowerCase().includes(search.toLowerCase());
     });
 
-    // Sort transactions based on createdAt
     return filtered.sort((a, b) => {
       const aDate = parseISO(a.createdAt);
       const bDate = parseISO(b.createdAt);
@@ -69,6 +56,32 @@ export default function UserTransactionHistory() {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
+  };
+
+  const handleUploadPaymentProof = (transactionId: number, file: File) => {
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("paymentProof", file);
+    formData.append("transactionId", transactionId.toString());
+
+    // Kirim file ke API untuk diproses
+    fetch("/api/upload-payment-proof", {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUploading(false);
+        alert("Payment proof uploaded successfully!");
+        // Update UI atau lakukan refresh untuk menampilkan bukti pembayaran
+      })
+      .catch((error) => {
+        setUploading(false);
+        alert("Error uploading payment proof.");
+      });
   };
 
   if (isPendingGet) {
@@ -88,7 +101,7 @@ export default function UserTransactionHistory() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
+    <div className="container mx-auto h-screen w-screen px-4 py-10 sm:px-6 lg:px-8">
       <h1 className="mb-5 text-2xl font-bold">Transaction History</h1>
       <form className="mb-4">
         <div className="relative w-full sm:w-64">
@@ -129,12 +142,13 @@ export default function UserTransactionHistory() {
               <TableHead className="text-center text-black font-bold">Total Price</TableHead>
               <TableHead className="text-center text-black font-bold">Status</TableHead>
               <TableHead className="text-center text-black font-bold">Actions</TableHead>
+              <TableHead className="text-center text-black font-bold">Upload Payment Proof</TableHead> {/* New column */}
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredAndSortedTransactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center">
+                <TableCell colSpan={8} className="text-center">
                   No transactions found.
                 </TableCell>
               </TableRow>
@@ -192,6 +206,14 @@ export default function UserTransactionHistory() {
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <input
+                      type="file"
+                      onChange={(e) => handleUploadPaymentProof(transaction.id, e.target.files?.[0]!)}
+                      className="border p-2"
+                    />
+                    {uploading && <span>Uploading...</span>}
                   </TableCell>
                 </TableRow>
               ))

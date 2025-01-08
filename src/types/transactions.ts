@@ -1,5 +1,6 @@
+import { number } from "yup"
+
 export interface Transactions {
-    transactions: any
     length: number
     id : number
     name:string
@@ -7,8 +8,22 @@ export interface Transactions {
     qty : number
     totalPrice:number
     status: string
-    createdAt: Date
-    updatedAt: Date
+   createdAt: string
+    updatedAt: string
+    user: {
+        fullname: string;
+        email: string;
+      };
+    event: {
+        name: string;
+        qty: number;
+        totalPrice: number;
+      }
+    payment: {
+      paymenStatus: string
+      paymentMethod: string
+      paymentProof:string
+    }[]
 }
 
 export enum TransactionStatus {
@@ -17,3 +32,5 @@ export enum TransactionStatus {
     SUCCESS = "SUCCESS",
     FAILED = "FAILED"
   }
+
+
