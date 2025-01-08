@@ -1,19 +1,23 @@
+// components/EventSkeleton.tsx
 import { Skeleton } from "@/components/ui/skeleton";
-import React from "react";
 
-const SkeletonBlog = () => {
+const EventSkeleton = () => {
   return (
-    <div>
-      <div className="container mx-auto max-w-5xl border px-4">
-        <section className="space-y-2">
-          <Skeleton className="h-[22px] w-[10%] rounded-sm" />
-          <Skeleton className="h-[30px] w-[40%] rounded-sm" />
-          <Skeleton className="h-[22px] w-[20%] rounded-sm" />
-          <Skeleton className="h-[200] rounded-sm md:h-[400px]" />
-        </section>
-      </div>
+    <div className="space-y-3">
+      <Skeleton className="h-[200px] w-full rounded-lg" /> {/* For image */}
+      <Skeleton className="h-4 w-2/3" /> {/* For title */}
+      <Skeleton className="h-4 w-1/3" /> {/* For date */}
+      <Skeleton className="h-4 w-1/4" /> {/* For price */}
     </div>
   );
 };
 
-export default SkeletonBlog;
+export const EventGridSkeleton = () => {
+  return (
+    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      {[...Array(8)].map((_, index) => (
+        <EventSkeleton key={index} />
+      ))}
+    </div>
+  );
+};

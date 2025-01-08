@@ -1,8 +1,11 @@
 // features/home/index.tsx
+"use client";
+
 import dynamic from "next/dynamic";
 import Footer from "@/components/Footer";
 import HeroSection from "./components/HeroSection";
 import Searchbar from "@/components/SearchBarDummy";
+import { useState } from "react";
 
 const NavbarWithSearchBar = dynamic(
   () => import("@/components/NavbarWithSearchBar"),
@@ -16,11 +19,22 @@ const ConcertGrid = dynamic(() => import("./components/ConcertGridWrapper"), {
 });
 
 const HomePage = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
   return (
     <>
       <HeroSection />
-      <Searchbar />
-      <ConcertGrid />
+      {/* <p>{searchQuery}</p> */}
+      <Searchbar 
+        onSearch={handleSearch}
+        value={searchQuery}
+      />
+      <ConcertGrid searchQuery={searchQuery} />
+      
     </>
   );
 };

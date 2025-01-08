@@ -10,3 +10,10 @@ export interface Transactions {
     createdAt: Date
     updatedAt: Date
 }
+
+export enum TransactionStatus {
+    WAITING = "WAITING",
+    VERIFYING = "VERIFYING",
+    SUCCESS = "SUCCESS",
+    FAILED = "FAILED"
+  }

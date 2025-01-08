@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Clock, MapPin } from "lucide-react";
+import { CalendarIcon, Clock, MapPin } from 'lucide-react';
 import EventDescription from "./components/EventDescription";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
@@ -11,12 +12,14 @@ import { City } from "@/types/city";
 import useGetEvent from "@/hooks/api/event/UseGetEvent";
 import useGetCategories from "@/hooks/api/event/useGetCategories";
 import useGetCities from "@/hooks/api/event/useGetCities";
+import TransactionModal from "./components/CreateTransactionModal";
 
 interface EventDetailProps {
   eventId: number;
 }
 
 const EventDetail = ({ eventId }: EventDetailProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const { data: event, isLoading: eventLoading } = useGetEvent(eventId);
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
@@ -50,8 +53,9 @@ const EventDetail = ({ eventId }: EventDetailProps) => {
 
   const category = categories?.data?.find((category: Category) => category.id === event.categoryId);
   const city = cities?.data?.find((city: City) => city.id === event.cityId);
+  
   const handleBuyTicket = () => {
-    router.push(`/events/${eventId}/checkout`);
+    setIsModalOpen(true);
   };
 
   return (
@@ -126,8 +130,18 @@ const EventDetail = ({ eventId }: EventDetailProps) => {
           </div>
         </div>
       </div>
+
+      <TransactionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        eventName={event.name}
+        availableSeats={event.availableSeats}
+        price={event.price}
+        eventId={event.id}
+      />
     </div>
   );
 };
 
 export default EventDetail;
+
