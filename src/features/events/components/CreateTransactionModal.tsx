@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
-import { useCreateTransaction } from "@/hooks/api/transactions/useCreateTransaction"
+import { useCreateTransaction } from "@/hooks/api/transaction/useCreateTransaction"
 
 interface TransactionModalProps {
   isOpen: boolean

@@ -8,6 +8,7 @@ export interface Transactions {
     qty : number
     totalPrice:number
     status: string
+
    createdAt: string
     updatedAt: string
     user: {
@@ -32,5 +33,3 @@ export enum TransactionStatus {
     SUCCESS = "SUCCESS",
     FAILED = "FAILED"
   }
-
-

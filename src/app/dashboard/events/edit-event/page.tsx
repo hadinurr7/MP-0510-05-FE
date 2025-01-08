@@ -1,9 +1,16 @@
+
 "use client";
 import React from "react";
 import UpdateEventPage from "@/features/dashboard/events/edit-events"
 
-const UpdateEvent = ({ params }: { params: { id: string } }) => {
-  return <UpdateEventPage id={Number(params.id)} />;
+interface EditEventPageProps {
+  params: {
+    eventId: string;
+  };
+}
+
+const UpdateEvent = ({ params }: { params: { eventId: string } }) => {
+  return <UpdateEventPage eventId={Number(params.eventId)} />;
 };
 
 export default UpdateEvent;

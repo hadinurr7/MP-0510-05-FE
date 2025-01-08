@@ -20,12 +20,13 @@ import {
 import { FaSort, FaEllipsisV } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 
-import useGetTransactionsByUser from "@/hooks/api/transactions/useGetTransactionsByUser";>>>>>>> main
+
 import LoadingScreen from "@/app/components/LoadingScreen";
 import ErrorLoading from "@/app/components/ErrorLoading";
 import { format, parseISO } from "date-fns";
 import { toast } from "react-toastify";
-import useUpdateTransactionStatus from "@/hooks/api/transactions/useUpdateTransactionsStatus";
+import useGetTransactionsByUser from "@/hooks/api/transaction/useGetTransactionsByUser";
+import useUpdateTransactionStatus from "@/hooks/api/transaction/useUpdateTransactionsStatus";
 
 export default function TransactionHistory() {
   const { data: session } = useSession();
